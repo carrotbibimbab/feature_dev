@@ -9,12 +9,24 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from pathlib import Path
 import sys
-
+import spaces
 # 프로젝트 루트를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent))
 
 # FastAPI 앱 import
 from app.main import app as fastapi_app
+
+# ============================================================================
+# 🔥 Startup 감지용 더미 함수 (필수!)
+# ============================================================================
+@spaces.GPU(duration=5)
+def _startup_gpu_check():
+    """HF Spaces startup 시 GPU 감지를 위한 더미 함수"""
+    import torch
+    return torch.cuda.is_available()
+
+# Startup 시 한 번 호출
+print(f"🔍 GPU Check: {_startup_gpu_check()}")
 
 # ============================================================================
 # Gradio 인터페이스 (데모/테스트용)
