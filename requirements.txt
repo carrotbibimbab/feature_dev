@@ -2,7 +2,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.9
-gradio==4.44.0
+gradio==4.44.1
 
 # Data Models
 pydantic==2.5.0
