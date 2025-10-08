@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+<<<<<<< HEAD
 *.pyc
 *.py[cod]
 *$py.class
@@ -44,10 +45,19 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+=======
+*.py[cod]
+*.pyc
+.Python
+venv/
+.venv/
+ENV/
+>>>>>>> c0b2d01 (initial deployment to HF spaces)
 
 # Environment
 .env
 .env.local
+<<<<<<< HEAD
 *.log
 
 # Testing
@@ -108,3 +118,34 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+=======
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+tests/
+test_images/
+
+# Logs
+*.log
+
+# ��� 모델 파일 (중요!)
+*.pth
+*.pt
+*.h5
+*.onnx
+*.bin
+*.pkl
+*.safetensors
+
+# ��� 전체 폴더 제외
+NIA/checkpoints/
+Colorinsight-main/
+
+# Backups
+*.backup
+.git.backup/
+>>>>>>> c0b2d01 (initial deployment to HF spaces)

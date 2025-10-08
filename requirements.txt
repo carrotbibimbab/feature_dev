@@ -1,0 +1,44 @@
+# FastAPI
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Supabase (호환 버전)
+supabase==2.3.4
+httpx==0.24.1
+
+# Image Processing
+opencv-python-headless==4.8.1.78
+Pillow==10.3.0
+
+
+# PyTorch
+torch==2.1.0
+torchvision==0.16.0
+
+# Machine Learning
+scikit-learn==1.3.2
+
+# OpenAI
+openai==1.3.7
+
+# Utilities
+python-dotenv==1.0.0
+python-jose[cryptography]==3.3.0
+requests==2.31.0  # 🔥 추가 (내부 API 호출용)
+
+# 🔥 ZeroGPU 지원
+spaces==0.19.4
+
+# colorinsight
+# scikit-image
+# validators
+# matplotlib
+# numpy==1.24.3
+
+# test
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.0
