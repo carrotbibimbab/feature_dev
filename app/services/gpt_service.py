@@ -1,9 +1,9 @@
 """
- AI 피부 분석 서비스
+AI 피부 분석 서비스
 OpenAI GPT를 활용한 개인화된 피부 분석 리포트 생성
 """
 
-from openai import OpenAI
+from openai import AsyncOpenAI  # 🔥 변경: OpenAI → AsyncOpenAI
 import os
 from typing import Dict, Any
 
@@ -12,13 +12,12 @@ class GPTSkinAnalysisService:
     """GPT 기반 피부 분석 서비스"""
     
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        self.client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))  # 🔥 비동기 클라이언트
         self.model = "gpt-4o-mini"
     
     
-    def generate_comprehensive_analysis(
+    async def generate_comprehensive_analysis(  # 🔥 async 추가
         self,
-        #personal_color: Dict[str, Any],
         sensitivity: Dict[str, Any],
         user_concerns: str = None
     ) -> Dict[str, Any]:
@@ -26,27 +25,21 @@ class GPTSkinAnalysisService:
         종합 피부 분석 리포트 생성
         
         Args:
-            personal_color: ColorInsight 분석 결과
             sensitivity: NIA 민감도 분석 결과
             user_concerns: 사용자가 입력한 피부 고민 (선택)
         
         Returns:
             {
                 'summary': '요약',
-                'personal_color_guide': '퍼스널 컬러 가이드',
                 'skin_condition': '피부 상태 분석',
                 'recommendations': [...],
                 'warnings': [...]
             }
         """
         
-        prompt = self._build_analysis_prompt(
-            #personal_color, 
-            sensitivity, 
-            user_concerns
-        )
+        prompt = self._build_analysis_prompt(sensitivity, user_concerns)
         
-        response = self.client.chat.completions.create(
+        response = await self.client.chat.completions.create(  # 🔥 await 추가
             model=self.model,
             messages=[
                 {
@@ -103,15 +96,12 @@ class GPTSkinAnalysisService:
     
     def _build_analysis_prompt(
         self,
-        #personal_color: Dict[str, Any],
         sensitivity: Dict[str, Any],
         user_concerns: str = None
     ) -> str:
         """분석 요청 프롬프트 생성"""
         
-        # season = personal_color.get('season', 'unknown')
-        # confidence = personal_color.get('confidence', 0)
-        
+        # 🔥 안전하게 값 가져오기
         sensitivity_score = sensitivity.get('sensitivity_score', 0)
         level = sensitivity.get('level', 'medium')
         dryness = sensitivity.get('dryness', 0)
@@ -119,9 +109,19 @@ class GPTSkinAnalysisService:
         pore = sensitivity.get('pore', 0)
         elasticity = sensitivity.get('elasticity', 0)
         
+        # dict 값이면 score 추출
+        if isinstance(dryness, dict):
+            dryness = dryness.get('score', 0)
+        if isinstance(pigmentation, dict):
+            pigmentation = pigmentation.get('score', 0)
+        if isinstance(pore, dict):
+            pore = pore.get('score', 0)
+        if isinstance(elasticity, dict):
+            elasticity = elasticity.get('score', 0)
+        
         prompt = f"""다음 피부 분석 결과를 바탕으로 종합 리포트를 작성해주세요:
 
-# 피부 민감도 분석
+## 피부 민감도 분석
 - 종합 민감도: {sensitivity_score:.1f}/100 ({level.upper()})
 - 건조도: {dryness:.1f}/100
 - 색소침착: {pigmentation:.1f}/100
@@ -130,7 +130,7 @@ class GPTSkinAnalysisService:
 """
         
         if user_concerns:
-            prompt += f"\n# 사용자 피부 고민\n{user_concerns}\n"
+            prompt += f"\n## 사용자 피부 고민\n{user_concerns}\n"
         
         prompt += """
 위 데이터를 종합하여 다음을 포함한 개인화된 뷰티 가이드를 작성하세요:
@@ -148,8 +148,7 @@ class GPTSkinAnalysisService:
         
         sections = {
             'summary': '',
-            #'personal_color_guide': '',
-            'skin_condition': '',
+            'skin_condition': '', 
             'recommendations': [],
             'warnings': []
         }
@@ -164,7 +163,7 @@ class GPTSkinAnalysisService:
             if line.startswith('## 요약'):
                 current_section = 'summary'
                 current_content = []
-            elif line.startswith('## 컨디션'):
+            elif line.startswith('## 피부') or line.startswith('## 상태'):
                 if current_section == 'summary':
                     sections['summary'] = '\n'.join(current_content).strip()
                 current_section = 'skin_condition'
@@ -184,17 +183,20 @@ class GPTSkinAnalysisService:
             elif line:
                 current_content.append(line)
         
+        # 마지막 섹션 처리
         if current_section == 'warnings':
             warnings = [l.strip('- ').strip() 
                        for l in current_content if l.strip()]
             sections['warnings'] = [w for w in warnings if w]
-        
-        sections['full_text'] = analysis_text
+        elif current_section == 'recommendations':
+            recs = [l.strip('- ').strip('1234567890. ') 
+                   for l in current_content if l.strip()]
+            sections['recommendations'] = [r for r in recs if r]
         
         return sections
     
     
-    def explain_sensitivity_score(self, score: float, level: str) -> str:
+    async def explain_sensitivity_score(self, score: float, level: str) -> str:  # 🔥 async 추가
         """민감도 점수 해석"""
         
         prompt = f"""피부 민감도 점수 {score:.1f}/100 (등급: {level})의 의미를 2-3문장으로 쉽게 설명해주세요.
@@ -202,7 +204,7 @@ class GPTSkinAnalysisService:
 - 일상 생활에서 주의할 점
 - 긍정적인 측면도 포함"""
         
-        response = self.client.chat.completions.create(
+        response = await self.client.chat.completions.create(  # 🔥 await 추가
             model=self.model,
             messages=[
                 {"role": "system", "content": "피부 관리 전문가로서 쉽고 친근하게 설명하세요."},

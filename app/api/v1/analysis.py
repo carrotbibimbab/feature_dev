@@ -67,12 +67,16 @@ async def comprehensive_analysis(
             image_path=temp_path,
             user_concerns=concerns
         )
-        
+
+        # ai_analysis가 coroutine이면 await 처리
+        ai_analysis_data = result['ai_analysis']
+        if hasattr(ai_analysis_data, '__await__'):  # coroutine 체크
+            ai_analysis_data = await ai_analysis_data
+
         # 응답 생성
         return ComprehensiveAnalysisResponse(
-            #personal_color=PersonalColorResponse(**result['personal_color']),
             sensitivity=SensitivityResponse(**result['sensitivity']),
-            ai_analysis=AIAnalysisResponse(**result['ai_analysis']),
+            ai_analysis=AIAnalysisResponse(**ai_analysis_data),
             timestamp=datetime.now().isoformat()
         )
     
@@ -188,7 +192,7 @@ async def analyze_sensitivity(
 async def health_check():
     """서비스 상태 확인"""
     
-    status_dict = orchestrator.check_services_health()
+    status_dict = await orchestrator.check_services_health()
     
     all_ready = all(status_dict.values())
     

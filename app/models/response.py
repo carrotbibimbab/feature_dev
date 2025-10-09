@@ -12,20 +12,20 @@ from datetime import datetime
 # 퍼스널 컬러 응답
 # ============================================================================
 
-class PersonalColorResponse(BaseModel):
-    """퍼스널 컬러 분석 결과"""
-    season: str = Field(..., description="Spring, Summer, Autumn, Winter")
-    confidence: float = Field(..., ge=0, le=100, description="신뢰도 (%)")
-    description: Optional[str] = Field(None, description="시즌 설명")
+# class PersonalColorResponse(BaseModel):
+#     """퍼스널 컬러 분석 결과"""
+#     season: str = Field(..., description="Spring, Summer, Autumn, Winter")
+#     confidence: float = Field(..., ge=0, le=100, description="신뢰도 (%)")
+#     description: Optional[str] = Field(None, description="시즌 설명")
     
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "season": "Spring",
-                "confidence": 85.5,
-                "description": "따뜻하고 밝은 봄 웜톤"
-            }
-        }
+#     class Config:
+#         json_schema_extra = {
+#             "example": {
+#                 "season": "Spring",
+#                 "confidence": 85.5,
+#                 "description": "따뜻하고 밝은 봄 웜톤"
+#             }
+#         }
 
 
 # ============================================================================
@@ -110,10 +110,10 @@ class ComprehensiveAnalysisResponse(BaseModel):
         json_schema_extra = {
             "example": {
                 "success": True,
-                "personal_color": {
-                    "season": "Spring",
-                    "confidence": 85.5
-                },
+                # "personal_color": {
+                #     "season": "Spring",
+                #     "confidence": 85.5
+                # },
                 "sensitivity": {
                     "sensitivity_score": 67.3,
                     "level": "medium",

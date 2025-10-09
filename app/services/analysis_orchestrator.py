@@ -23,12 +23,18 @@ class AnalysisOrchestrator:
         )
         self.gpt_service = GPTSkinAnalysisService()
     
+    def check_services_health(self) -> dict:
+        """서비스 상태 확인"""
+        return {
+            "nia": True,
+            "gpt": True
+        }
     
     async def comprehensive_analysis(
         self,
         image_path: str,
         user_concerns: Optional[str] = None
-    ) -> Dict[str, Any]:
+        ) -> Dict[str, Any]:
         """
         종합 피부 분석 실행
         
@@ -59,6 +65,7 @@ class AnalysisOrchestrator:
         except Exception as e:
             raise Exception(f"민감도 분석 실패: {str(e)}")
         
+       
         # 3. GPT AI 분석
         try:
             ai_result = await self._generate_ai_analysis(

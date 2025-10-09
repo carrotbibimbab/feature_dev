@@ -31,3 +31,5 @@ httpx==0.24.1
 
 # ZeroGPU support
 spaces==0.19.4
+
+huggingface-hub>=0.20.0

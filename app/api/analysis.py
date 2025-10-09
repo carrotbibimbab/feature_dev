@@ -80,7 +80,7 @@ async def comprehensive_analysis(
         
         # 3. GPT AI 분석
         try:
-            ai_result = gpt_service.generate_comprehensive_analysis(
+            ai_result = await gpt_service.generate_comprehensive_analysis(
                 #personal_color=personal_color.dict(),
                 sensitivity=sensitivity.dict(),
                 user_concerns=concerns
@@ -231,7 +231,7 @@ async def explain_sensitivity_score(
     """민감도 점수 해석 (GPT 활용)"""
     
     try:
-        explanation = gpt_service.explain_sensitivity_score(score, level)
+        explanation = await gpt_service.explain_sensitivity_score(score, level)
         
         return {
             "success": True,
