@@ -119,15 +119,9 @@ class AnalysisOrchestrator:
     ) -> Dict[str, Any]:
         """GPT AI 분석 (비동기)"""
         
-        # GPT도 동기 함수이므로 run_in_executor 사용
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(
-            None,
-            self.gpt_service.generate_comprehensive_analysis,
-            #personal_color,
-            sensitivity,
-            user_concerns
-        )
+       
+        
+        result = await self.gpt_service.generate_guide(sensitivity,user_concerns)
         
         return result
     
@@ -145,13 +139,8 @@ class AnalysisOrchestrator:
     async def explain_score(self, score: float, level: str) -> str:
         """민감도 점수 해석"""
         
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(
-            None,
-            self.gpt_service.explain_sensitivity_score,
-            score,
-            level
-        )
+        
+        result = await self.gpt_service.explain_sensitivity_score(score,level)
         
         return result
     
