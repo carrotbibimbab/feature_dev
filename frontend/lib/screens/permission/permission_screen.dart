@@ -4,12 +4,23 @@ import 'package:bf_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PermissionScreen extends StatelessWidget {
   const PermissionScreen({super.key});
 
   // 권한을 요청하고 다음 화면으로 이동하는 함수
   Future<void> _requestPermissionsAndNavigate(BuildContext context) async {
+    // 🔥 웹 환경이면 권한 요청 스킵
+    if (kIsWeb) {
+      // 웹에서는 바로 로그인 화면으로 이동
+      if (context.mounted) {
+        context.go('/login');
+      }
+      return;
+    }
+    
+    // 🔥 모바일 환경에서만 권한 요청
     // 필수 권한인 카메라와 사진 권한을 요청합니다.
     await [
       Permission.camera,

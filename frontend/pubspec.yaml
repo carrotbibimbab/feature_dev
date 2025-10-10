@@ -13,7 +13,7 @@ dependencies:
   
   # 기본 패키지
   cupertino_icons: ^1.0.6
-
+  webview_flutter: ^4.4.4
   dio: ^5.3.3 # HTTP 클라이언트 라이브러리
   
   # 인증 및 백엔드
@@ -44,7 +44,7 @@ dependencies:
   
   # 유틸리티
   intl: ^0.18.1
-  screenshot: ^2.1.0
+  screenshot: ^3.0.0
   share_plus: ^7.2.1
   url_launcher: ^6.2.2
   

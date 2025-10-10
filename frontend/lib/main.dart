@@ -7,6 +7,7 @@ import 'package:bf_app/services/supabase_service.dart';
 void main() async {
   // Flutter 바인딩 초기화
   WidgetsFlutterBinding.ensureInitialized();
+  
 
   // Supabase 초기화
   await SupabaseConfig.initialize();
