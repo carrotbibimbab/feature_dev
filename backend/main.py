@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
 from typing import Optional
+import uuid
 
 from fastapi import FastAPI, Request, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
+from app.services.response_formatter import ResponseFormatter
 
 # ────────────────────────────────────────────────────────────
 # AI 서비스 Import
@@ -372,6 +374,7 @@ def get_product(product_id: str):
 # ────────────────────────────────────────────────────────────
 # AI 분석 API (핵심 기능)
 # ────────────────────────────────────────────────────────────
+
 @app.post("/api/v1/analysis/comprehensive", tags=["AI 분석"])
 async def ai_comprehensive_analysis(
     file: UploadFile = File(..., description="얼굴 이미지 (JPG, PNG)"),
@@ -384,10 +387,13 @@ async def ai_comprehensive_analysis(
     **플로우:**
     1. 이미지 업로드 → Supabase Storage
     2. AI API 호출 → HF Space (NIA 모델 + GPT)
-    3. 결과 저장 → Supabase DB
-    4. 응답 반환
+    3. 결과 변환 → 프론트엔드 형식
+    4. 결과 저장 → Supabase DB
+    5. 응답 반환 (프론트엔드 AnalysisResult 형식)
     
     **인증:** JWT Token 또는 Session 필요
+    
+    **응답 형식:** 프론트엔드 AnalysisResult 모델과 일치
     """
     
     if not ai_client or not storage_service:
@@ -412,6 +418,7 @@ async def ai_comprehensive_analysis(
             file=file
         )
         image_id = upload_result["image_id"]
+        image_url = upload_result["image_url"]
         
         # 2. AI 분석 요청
         await file.seek(0)  # 파일 포인터 리셋
@@ -420,25 +427,24 @@ async def ai_comprehensive_analysis(
             concerns=concerns
         )
         
-        # 3. 결과 저장
-        analysis_record = await storage_service.save_analysis_result(
+        # 3. 응답 형식 변환 (HF Space → 프론트엔드)
+        formatted_response = ResponseFormatter.format_analysis_response(
+            analysis_id=str(uuid.uuid4()),  # 새 분석 ID 생성
             user_id=user_id,
             image_id=image_id,
+            image_url=image_url,
             ai_result=ai_result,
             concerns=concerns
         )
         
-        # 4. 응답
-        return {
-            "success": True,
-            "data": {
-                "analysis_id": analysis_record["id"],
-                "image_url": upload_result["image_url"],
-                "sensitivity": ai_result.get("sensitivity"),
-                "ai-analysis": ai_result.get("analysis"),
-                "timestamp": analysis_record["created_at"]
-            }
-        }
+        # 4. 결과 저장 (프론트엔드 형식으로)
+        await storage_service.save_analysis_result_formatted(
+            user_id=user_id,
+            formatted_result=formatted_response
+        )
+        
+        # 5. 응답 반환 (success/data 래퍼 없이 직접 반환)
+        return formatted_response
     
     except HTTPException:
         raise
@@ -449,7 +455,6 @@ async def ai_comprehensive_analysis(
             detail=f"분석 처리 실패: {str(e)}"
         )
 
-
 @app.get("/api/v1/analysis/history", tags=["AI 분석"])
 async def get_analysis_history(
     limit: int = 10,
@@ -459,6 +464,7 @@ async def get_analysis_history(
     사용자의 분석 히스토리 조회
     
     **인증:** JWT Token 또는 Session 필요
+    **응답:** AnalysisResult 배열
     """
     
     if not storage_service:
@@ -470,16 +476,12 @@ async def get_analysis_history(
     user_id = user.get("sub")
     
     try:
-        history = await storage_service.get_user_analyses(
+        history = await storage_service.get_user_analyses_formatted(
             user_id=user_id,
             limit=limit
         )
         
-        return {
-            "success": True,
-            "data": history,
-            "count": len(history)
-        }
+        return history  # 배열 직접 반환
     
     except HTTPException:
         raise
@@ -501,6 +503,7 @@ async def get_analysis_detail(
     
     **인증:** JWT Token 또는 Session 필요
     **권한:** 본인의 분석 결과만 조회 가능
+    **응답:** AnalysisResult 객체
     """
     
     if not storage_service:
@@ -512,7 +515,7 @@ async def get_analysis_detail(
     user_id = user.get("sub")
     
     try:
-        analysis = await storage_service.get_analysis_by_id(
+        analysis = await storage_service.get_analysis_by_id_formatted(
             analysis_id=analysis_id,
             user_id=user_id
         )
@@ -523,10 +526,7 @@ async def get_analysis_detail(
                 detail="분석 결과를 찾을 수 없습니다"
             )
         
-        return {
-            "success": True,
-            "data": analysis
-        }
+        return analysis  # 객체 직접 반환
     
     except HTTPException:
         raise
