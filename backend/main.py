@@ -239,29 +239,26 @@ async def login(request: Request):
 
 @app.get("/auth/google/callback")
 async def auth_callback(request: Request):
-    """Google 로그인 콜백"""
-    raw_state = request.query_params.get("state")
-    try:
-        parsed = state_signer.loads(raw_state) if raw_state else {"next": "/profile"}
-    except Exception:
-        return RedirectResponse(url="/?error=invalid_state")
-
-    try:
-        token = await oauth.google.authorize_access_token(request)
-        userinfo = token.get("userinfo")
-        if not userinfo:
-            resp = await oauth.google.parse_id_token(request, token)
-            userinfo = resp
-    except Exception:
-        return RedirectResponse(url="/?error=oauth_error")
-
+    # ... 기존 OAuth 처리 ...
+    
     request.session["user"] = {
         "sub": userinfo.get("sub"),
         "email": userinfo.get("email"),
         "name": userinfo.get("name"),
         "picture": userinfo.get("picture"),
     }
-    return RedirectResponse(url=parsed.get("next", "/profile"))
+    
+    # 🔥 JWT 토큰 발급
+    token = create_access_token({
+        "sub": userinfo.get("sub"),
+        "email": userinfo.get("email"),
+        "name": userinfo.get("name"),
+        "picture": userinfo.get("picture"),
+    })
+    
+    # Flutter 앱으로 리디렉트 (토큰 포함)
+    flutter_callback = f"myapp://login-callback?token={token}"
+    return RedirectResponse(url=flutter_callback)
 
 @app.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request):
