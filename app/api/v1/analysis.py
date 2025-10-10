@@ -192,7 +192,7 @@ async def analyze_sensitivity(
 async def health_check():
     """서비스 상태 확인"""
     
-    status_dict = await orchestrator.check_services_health()
+    status_dict = orchestrator.check_services_health()
     
     all_ready = all(status_dict.values())
     

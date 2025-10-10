@@ -48,7 +48,7 @@ except ImportError:
 # async def root():
 #     """루트 엔드포인트"""
 #     return {
-#         "service": "VUPA API",
+#         "service": "BF API",
 #         "version": "1.0.0",
 #         "status": "running",
 #         "endpoints": {

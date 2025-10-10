@@ -58,7 +58,7 @@ async def api_info():
         "status": "running",
         "endpoints": {
             "comprehensive_analysis": "/api/v1/analysis/comprehensive",
-            "personal_color": "/api/v1/analysis/personal-color",
+            # "personal_color": "/api/v1/analysis/personal-color",
             "sensitivity": "/api/v1/analysis/sensitivity",
             "health": "/api/v1/analysis/health",
             "docs": "/docs",
@@ -76,7 +76,7 @@ async def health():
         "status": "healthy",
         "openai_configured": os.getenv('OPENAI_API_KEY') is not None,
         "models": {
-            "colorinsight": os.path.exists('./Colorinsight-main'),
+            # "colorinsight": os.path.exists('./Colorinsight-main'),
             "nia": os.path.exists('./NIA/checkpoints')
         }
     }
