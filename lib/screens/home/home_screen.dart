@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: RichText(
                     text: TextSpan(
                       style: const TextStyle(
-                        fontFamily: 'SF Pro Display',
+                        fontFamily: 'NanumSquareNeo',
                         fontSize: 22,
                         height: 1.4,
                         color: Color(0xFF000000),
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const TextSpan(
                           text: '을 확인해볼까요? 👀', // 나머지 텍스트
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                          style: TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -120,14 +120,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: RichText(
                     text: const TextSpan(
                       style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                        fontFamily: 'NanumSquareNeo',
                         fontSize: 16,
                         color: Color(0xFF000000),
                       ),
                       children: [
                         TextSpan(
                           text: '내 피부를 더 건강하게, ',
-                          style: TextStyle(fontWeight: FontWeight.w300),
+                          style: TextStyle(fontWeight: FontWeight.w400),
                         ),
                         TextSpan(
                           text: '뷰파가 제안하는 솔루션🌸',

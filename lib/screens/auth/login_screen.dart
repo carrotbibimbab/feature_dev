@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen>
               textAlign: TextAlign.center,
               text: const TextSpan(
                 style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                  fontFamily: 'NanumSquareNeo',
                   fontSize: 11,
                   color: Color(0xFF000000),
                   height: 1.2,

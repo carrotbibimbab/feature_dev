@@ -44,7 +44,7 @@ class BFApp extends StatelessWidget {
           primary: AppColors.primary,
           secondary: AppColors.logoRed,
         ),
-        fontFamily: 'SF-Pro-Display',
+        fontFamily: 'NanumSquareNeo',
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -52,8 +52,8 @@ class BFApp extends StatelessWidget {
           titleTextStyle: TextStyle(
             color: AppColors.black,
             fontSize: 18,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'SF-Pro-Display',
+            fontWeight: FontWeight.w700,
+            fontFamily: 'NanumSquareNeo',
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -69,8 +69,8 @@ class BFApp extends StatelessWidget {
             ),
             textStyle: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'SF-Pro-Display',
+              fontWeight: FontWeight.w700,
+              fontFamily: 'NanumSquareNeo',
             ),
           ),
         ),

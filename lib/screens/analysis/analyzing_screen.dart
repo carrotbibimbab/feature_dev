@@ -155,7 +155,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: const TextStyle(
-                        fontFamily: 'SF Pro Display',
+                        fontFamily: 'NanumSquareNeo',
                         fontSize: 20,
                         height: 35 / 20,
                         letterSpacing: 2,
@@ -164,7 +164,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
                         const TextSpan(
                           text: 'AI가 ',
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w700,
                             color: Color(0xFF000000),
                           ),
                         ),
@@ -178,7 +178,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
                         const TextSpan(
                           text: '님의\n얼굴을 분석 중이에요···',
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w700,
                             color: Color(0xFF000000),
                           ),
                         ),

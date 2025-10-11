@@ -150,7 +150,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             child: RichText(
               text: TextSpan(
                 style: const TextStyle(
-                  fontFamily: 'SF Pro Display',
+                  fontFamily: 'NanumSquareNeo',
                   fontSize: 36,
                   height: 1.2, // ✅ 줄 간격 조정
                   letterSpacing: 1.5,
@@ -222,7 +222,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           RichText(
             text: const TextSpan(
               style: TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 20,
                 letterSpacing: 0.11,
               ),
@@ -230,7 +230,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 TextSpan(
                   text: '🎨 나의 ',
                   style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF000000),
                   ),
                 ),
@@ -244,7 +244,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 TextSpan(
                   text: '는...',
                   style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF000000),
                   ),
                 ),
@@ -267,8 +267,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Text(
             '📝 특징',
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
+              fontFamily: 'NanumSquareNeo',
+              fontWeight: FontWeight.w700,
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -284,8 +284,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Text(
             '✨ 인생 컬러 팔레트',
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
+              fontFamily: 'NanumSquareNeo',
+              fontWeight: FontWeight.w700,
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -361,7 +361,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           RichText(
             text: const TextSpan(
               style: TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 20,
                 letterSpacing: 0.11,
               ),
@@ -369,7 +369,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 TextSpan(
                   text: '💆 나의 ',
                   style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF000000),
                   ),
                 ),
@@ -383,7 +383,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 TextSpan(
                   text: '은...',
                   style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF000000),
                   ),
                 ),
@@ -406,8 +406,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Text(
             '📝 특징',
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
+              fontFamily: 'NanumSquareNeo',
+              fontWeight: FontWeight.w700,
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -431,8 +431,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '🚨 민감성 위험도 게이지',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -457,7 +457,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             _getSensitivityDescription(),
             textAlign: TextAlign.left, // ✅ 왼쪽 정렬
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 15,
               height: 18 / 15,
             ),
@@ -478,8 +478,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Text(
             '👁️‍🗨️ 피부 상세 분석',
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
+              fontFamily: 'NanumSquareNeo',
+              fontWeight: FontWeight.w700,
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -563,7 +563,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                   child: Text(
                     '$score',
                     style: const TextStyle(
-                      fontFamily: 'SF Pro Display',
+                      fontFamily: 'NanumSquareNeo',
                       fontWeight: FontWeight.bold,
                       fontSize: 14, // ✅ 16 → 14 (작게)
                       color: Color(0xFFE8B7D4),
@@ -593,7 +593,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 12,
                 height: 20 / 12,
               ),
@@ -630,8 +630,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Text(
             '💧 핵심 솔루션: 스킨케어 루틴',
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
+              fontFamily: 'NanumSquareNeo',
+              fontWeight: FontWeight.w700,
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -644,7 +644,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 child: RichText(
                   text: TextSpan(
                     style: const TextStyle(
-                      fontFamily: 'SF Pro Display',
+                      fontFamily: 'NanumSquareNeo',
                       fontSize: 15,
                       height: 18 / 15,
                     ),
@@ -701,7 +701,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     return Text(
       text,
       style: const TextStyle(
-        fontFamily: 'SF Pro Display',
+        fontFamily: 'NanumSquareNeo',
         fontSize: 15,
         height: 18 / 15,
       ),

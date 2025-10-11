@@ -85,8 +85,8 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
                     child: Text(
                       '나의 분석 로그🌷',
                       style: TextStyle(
-                        fontFamily: 'SF Pro Display',
-                        fontWeight: FontWeight.w500,
+                        fontFamily: 'NanumSquareNeo',
+                        fontWeight: FontWeight.w700,
                         fontSize: 32,
                         color: Colors.black,
                       ),
@@ -104,7 +104,7 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
                                 child: Text(
                                   '분석 기록이 없습니다.',
                                   style: TextStyle(
-                                    fontFamily: 'SF Pro Display',
+                                    fontFamily: 'NanumSquareNeo',
                                     fontSize: 16,
                                     color: Colors.grey,
                                   ),
@@ -237,9 +237,9 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          fontFamily: 'SF Pro Display',
+          fontFamily: 'NanumSquareNeo',
           fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w700,
           color: Colors.white,
         ),
       ),

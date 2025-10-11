@@ -314,7 +314,7 @@ class _OnboardingPage extends StatelessWidget {
             description,
             textAlign: TextAlign.center, // ✅ 가운데 정렬
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 15,
               color: Color(0xFF828282),
               height: 20 / 15,
@@ -349,7 +349,7 @@ class _OnboardingPage extends StatelessWidget {
       TextSpan(
         text: blackPart,
         style: const TextStyle(
-          fontFamily: 'SF Pro Display',
+          fontFamily: 'NanumSquareNeo',
           fontWeight: FontWeight.w900, // ✅ 더 굵게 (bold → w900)
           fontSize: 20,
           color: Color(0xFF000000),
@@ -358,7 +358,7 @@ class _OnboardingPage extends StatelessWidget {
       TextSpan(
         text: redPart,
         style: const TextStyle(
-          fontFamily: 'SF Pro Display',
+          fontFamily: 'NanumSquareNeo',
           fontWeight: FontWeight.w900, // ✅ 더 굵게 (bold → w900)
           fontSize: 20,
           color: Color(0xFFC6091D),
