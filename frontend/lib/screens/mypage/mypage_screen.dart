@@ -165,8 +165,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                   Text(
                                     '${_profile?.name ?? '사용자'}님 💌',
                                     style: const TextStyle(
-                                      fontFamily: 'SF Pro Display',
-                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'NanumSquareNeo',
+                                      fontWeight: FontWeight.w900,
                                       fontSize: 24,
                                       color: Color(0xFF000000),
                                     ),
@@ -179,8 +179,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                     Text(
                                       '${_profile!.birthYear}.10.12',
                                       style: const TextStyle(
-                                        fontFamily: 'SF Pro Display',
-                                        fontWeight: FontWeight.w300,
+                                        fontFamily: 'NanumSquareNeo',
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 15,
                                         color: Color(0xFF434343),
                                       ),
@@ -269,9 +269,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          fontFamily: 'SF Pro Display',
+          fontFamily: 'NanumSquareNeo',
           fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
           color: Colors.white,
         ),
       ),

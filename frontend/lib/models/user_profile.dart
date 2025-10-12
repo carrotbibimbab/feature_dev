@@ -20,6 +20,7 @@ class UserProfile with _$UserProfile {
     // 화면 5: 프로필 설정에서 입력받는 정보
     @JsonKey(name: 'birth_year') int? birthYear, // 생년월일 (년도만)
     @JsonKey(name: 'skin_type')
+    
     String? skinType, // normal, oily, dry, combination, sensitive
 
     // 프로필 완성 여부
@@ -28,7 +29,10 @@ class UserProfile with _$UserProfile {
     // 타임스탬프
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
-  }) = _UserProfile;
+    List<String>? allergies,           
+    @JsonKey(name: 'skin_concerns') 
+    List<String>? skinConcerns,
+    }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
       _$UserProfileFromJson(json);

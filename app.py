@@ -80,7 +80,7 @@ def analyze_image(image, concerns):
             data = {'concerns': concerns} if concerns else {}
             
             response = requests.post(
-                'http://localhost:7860/api/v1/analysis/comprehensive',
+                'http://localhost:7860/api/analysis/comprehensive',
                 files=files,
                 data=data,
                 timeout=60
@@ -88,62 +88,146 @@ def analyze_image(image, concerns):
         
         if response.status_code == 200:
             result = response.json()
-            output = "## 📊 피부 분석 결과\n\n"
+            print(f"DEBUG - Response keys: {result.keys()}")
             
+            output = "# 🎨 피부 분석 결과\n\n"
+            
+            # 분석 ID 표시
+            if 'analysis_id' in result:
+                output += f"**분석 ID**: `{result['analysis_id']}`\n\n"
+            
+            # ========== 피부 민감도 분석 ==========
             if 'sensitivity' in result:
                 sens = result['sensitivity']
-                output += "### 🧴 피부 민감도\n\n"
+                output += "## 📊 피부 민감도 분석\n\n"
                 
-                if 'overall_sensitivity' in sens:
-                    overall = sens['overall_sensitivity']
-                    if isinstance(overall, dict):
-                        output += f"- **종합 점수**: {overall.get('score', 'N/A')}\n"
-                        output += f"- **레벨**: {overall.get('level', 'N/A')}\n\n"
+                # 종합 민감도
+                if 'sensitivity_score' in sens:
+                    score = sens['sensitivity_score']
+                    level = sens.get('level', 'MEDIUM').upper()
+                    
+                    level_emoji = {
+                        'LOW': '🟢',
+                        'MEDIUM': '🟡',
+                        'HIGH': '🔴'
+                    }.get(level, '⚪')
+                    
+                    output += f"### {level_emoji} 종합 민감도\n"
+                    output += f"- **점수**: {score:.1f}/100\n"
+                    output += f"- **레벨**: {level}\n\n"
                 
+                # 상세 지표
+                output += "### 📈 상세 지표\n\n"
                 items = [
-                    ('dryness', '건조도'),
-                    ('pigmentation', '색소침착'),
-                    ('pore', '모공'),
-                    ('elasticity', '탄력')
+                    ('dryness', '건조도', '💧'),
+                    ('pigmentation', '색소침착', '🎨'),
+                    ('pore', '모공', '🔍'),
+                    ('elasticity', '탄력', '✨')
                 ]
                 
-                for key, label in items:
+                for key, label, emoji in items:
                     if key in sens:
                         value = sens[key]
-                        if isinstance(value, dict):
-                            score = value.get('score', 'N/A')
-                            level = value.get('level', '')
-                            output += f"- **{label}**: {score}"
-                            if level:
-                                output += f" ({level})"
-                            output += "\n"
-                        elif isinstance(value, (int, float)):
-                            output += f"- **{label}**: {value:.2f}\n"
+                        if isinstance(value, (int, float)):
+                            output += f"{emoji} **{label}**: {value:.1f}/100\n"
                 
                 output += "\n"
+                
+                # 주의 성분
+                if 'caution_ingredients' in sens and sens['caution_ingredients']:
+                    output += "### 🚫 주의 성분\n\n"
+                    caution = sens['caution_ingredients'][:5]
+                    output += ", ".join(caution)
+                    if len(sens['caution_ingredients']) > 5:
+                        output += f" 외 {len(sens['caution_ingredients']) - 5}개"
+                    output += "\n\n"
+                
+                # 안전 성분
+                if 'safe_ingredients' in sens and sens['safe_ingredients']:
+                    output += "### ✅ 안전 성분\n\n"
+                    safe = sens['safe_ingredients'][:5]
+                    output += ", ".join(safe)
+                    if len(sens['safe_ingredients']) > 5:
+                        output += f" 외 {len(sens['safe_ingredients']) - 5}개"
+                    output += "\n\n"
             
+            # ========== AI 뷰티 가이드 (DB 버전 - 상세) ==========
             if 'ai_analysis' in result:
                 ai = result['ai_analysis']
-                output += "### 🤖 AI 뷰티 가이드\n\n"
+                output += "---\n\n"
+                output += "## 🤖 AI 뷰티 가이드\n\n"
                 
+                # 가이드 제목
+                if 'title' in ai:
+                    output += f"### {ai['title']}\n\n"
+                
+                # 종합 평가
                 if 'summary' in ai and ai['summary']:
-                    output += f"**요약**:\n{ai['summary']}\n\n"
+                    output += "**💎 종합 평가**\n\n"
+                    output += f"{ai['summary']}\n\n"
                 
-                if 'recommendations' in ai and ai['recommendations']:
-                    recs = ai['recommendations']
-                    if isinstance(recs, list) and recs:
-                        output += "**추천사항**:\n"
-                        for i, rec in enumerate(recs, 1):
-                            output += f"{i}. {rec}\n"
+                # Sections 파싱 (DB 버전은 sections 딕셔너리 구조)
+                if 'sections' in ai and ai['sections']:
+                    sections = ai['sections']
+                    
+                    # 아침 루틴
+                    if 'morning_routine' in sections and sections['morning_routine']:
+                        output += "**🌅 아침 루틴**\n\n"
+                        for i, step in enumerate(sections['morning_routine'], 1):
+                            output += f"{i}. {step}\n"
+                        output += "\n"
+                    
+                    # 저녁 루틴
+                    if 'evening_routine' in sections and sections['evening_routine']:
+                        output += "**🌙 저녁 루틴**\n\n"
+                        for i, step in enumerate(sections['evening_routine'], 1):
+                            output += f"{i}. {step}\n"
+                        output += "\n"
+                    
+                    # 추천 성분
+                    if 'ingredients' in sections and sections['ingredients']:
+                        output += "**🧪 추천 성분**\n\n"
+                        for ing in sections['ingredients'][:5]:
+                            output += f"- {ing}\n"
+                        output += "\n"
+                    
+                    # 생활습관
+                    if 'lifestyle' in sections and sections['lifestyle']:
+                        output += "**🌱 생활습관 조언**\n\n"
+                        for tip in sections['lifestyle'][:3]:
+                            output += f"- {tip}\n"
+                        output += "\n"
+                    
+                    # 주의사항
+                    if 'warnings' in sections and sections['warnings']:
+                        output += "**⚠️ 주의사항**\n\n"
+                        for warning in sections['warnings'][:3]:
+                            output += f"- {warning}\n"
+                        output += "\n"
+                    
+                    # 전문가 조언
+                    if 'expert_tip' in sections and sections['expert_tip']:
+                        output += "**💬 전문가 조언**\n\n"
+                        output += f"> {sections['expert_tip']}\n\n"
+                
+                # 토큰 사용량
+                if 'tokens_used' in ai:
+                    output += f"\n_AI 분석에 {ai['tokens_used']} 토큰 사용_\n"
+            
+            # 타임스탬프
+            if 'timestamp' in result:
+                output += f"\n\n---\n_분석 시각: {result['timestamp']}_"
             
             return output
+        
         else:
-            return f"❌ 에러 발생: {response.status_code}\n\n{response.text}"
+            return f"❌ 에러 발생 (HTTP {response.status_code})\n\n```\n{response.text}\n```"
     
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
         return f"❌ 분석 실패: {str(e)}\n\n상세:\n```\n{error_details}\n```"
+    
     
     finally:
         if os.path.exists(tmp_path):

@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/services/supabase_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';  
+import 'package:bf_app/config/app_config.dart';  // 추가
+
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
@@ -19,6 +22,20 @@ class ApiService {
 
   /// Supabase에서 자동으로 토큰 가져와서 설정
   Future<void> _ensureAuth() async {
+    // 🔥 개발 모드: Mock 토큰 사용
+    if (AppConfig.isDevelopmentMode) {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    
+    if (token != null) {
+      setAuthToken(token);
+      print('🔧 개발 모드: Mock 토큰 사용');
+      return;
+      } else {
+      // Mock 토큰이 없으면 에러
+      throw Exception('개발 모드: 로그인이 필요합니다 (개발자 모드로 먼저 로그인하세요)');
+    }
+    }
     final user = SupabaseConfig.client.auth.currentUser;
     if (user == null) {
       throw Exception('로그인이 필요합니다');
@@ -28,7 +45,11 @@ class ApiService {
     final session = SupabaseConfig.client.auth.currentSession;
     if (session != null) {
       setAuthToken(session.accessToken);
+      print('✅ Supabase 토큰 사용');
+    } else {
+      throw Exception('세션이 만료되었습니다');
     }
+    
   }
 
   /// 종합 AI 분석 요청 (화면 14 → 화면 16)

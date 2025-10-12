@@ -103,7 +103,7 @@ class _IntroScreenState extends State<IntroScreen>
                 child: const Text(
                   '당신의 가장 똑똑한 AI 뷰티 친구',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                    fontFamily: 'NanumSquareNeo',
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: Color(0xFFC6091D),
@@ -120,7 +120,7 @@ class _IntroScreenState extends State<IntroScreen>
                   '복잡한 뷰티 세계, 더 이상 혼자 고민하지 마세요.\n뷰파는 다음과 같은 의미를 담아 당신과 함께합니다.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                    fontFamily: 'NanumSquareNeo',
                     fontSize: 12,
                     height: 20 / 12,
                     color: Color(0xFF000000),
@@ -146,7 +146,7 @@ class _IntroScreenState extends State<IntroScreen>
                   textAlign: TextAlign.center,
                   text: const TextSpan(
                     style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                      fontFamily: 'NanumSquareNeo',
                       fontSize: 12,
                       height: 20 / 12,
                     ),

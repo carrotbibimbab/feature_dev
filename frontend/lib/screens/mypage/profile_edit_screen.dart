@@ -145,7 +145,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const Text(
                   '회원님의 정보를\n수정해주세요 🍥',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                    fontFamily: 'NanumSquareNeo',
                     fontWeight: FontWeight.w500,
                     fontSize: 32,
                     height: 50 / 32,
@@ -159,8 +159,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const Text(
                   '이름',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),
@@ -189,8 +189,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const Text(
                   '생년월일',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),
@@ -277,8 +277,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const Text(
                   '피부타입',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),

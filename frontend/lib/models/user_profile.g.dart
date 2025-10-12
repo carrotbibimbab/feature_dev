@@ -22,6 +22,12 @@ _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
+      allergies: (json['allergies'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      skinConcerns: (json['skin_concerns'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
@@ -36,4 +42,6 @@ Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
       'profile_completed': instance.profileCompleted,
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'allergies': instance.allergies,
+      'skin_concerns': instance.skinConcerns,
     };

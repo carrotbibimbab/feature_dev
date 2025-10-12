@@ -1,7 +1,8 @@
 // lib/screens/analysis/analyzing_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';  // ✨ 추가
 import 'package:bf_app/services/supabase_data_service.dart';
-import 'package:bf_app/services/api_service.dart';
+import 'package:bf_app/providers/analysis_provider.dart';  // ✨ 추가
 import 'package:go_router/go_router.dart';
 import 'dart:io';
 
@@ -17,7 +18,6 @@ class AnalyzingScreen extends StatefulWidget {
 class _AnalyzingScreenState extends State<AnalyzingScreen>
     with SingleTickerProviderStateMixin {
   final _dataService = SupabaseDataService();
-  final _apiService = ApiService();
 
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -63,11 +63,30 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
   }
 
   Future<void> _startAnalysis() async {
+    // ✨ Provider를 통해 분석 시작
+    final analysisProvider = context.read<AnalysisProvider>();
+
     try {
-      // 실제 AI 분석 API 호출
-      final analysisResult = await _apiService.analyzeImageComprehensive(
-        File(widget.imagePath),
+      // ✨ Provider의 analyzeImage 메서드 호출
+      // (이미 내부에서 진행 상태를 업데이트하고 있음)
+      final analysisResult = await analysisProvider.analyzeImage(
+        imageFile: File(widget.imagePath),
       );
+
+      if (analysisResult == null) {
+        // 분석 실패
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                analysisProvider.error ?? '분석에 실패했습니다. 다시 시도해주세요.',
+              ),
+            ),
+          );
+          context.go('/analysis-start');
+        }
+        return;
+      }
 
       // 얼굴 인식 체크
       if (analysisResult.faceDetected == false) {
@@ -79,6 +98,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
 
       // 분석 완료 후 결과 화면으로 이동 (최소 8초 보여주기)
       if (mounted) {
+        // 애니메이션과 분석이 모두 완료될 때까지 대기
         await Future.delayed(const Duration(milliseconds: 8000));
         context.go('/analysis-result', extra: analysisResult);
       }
@@ -87,7 +107,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('분석 실패: $e')),
         );
-        context.pop();
+        context.go('/analysis-start');
       }
     }
   }
@@ -151,39 +171,81 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 86),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontFamily: 'SF Pro Display',
-                        fontSize: 20,
-                        height: 35 / 20,
-                        letterSpacing: 2,
-                      ),
-                      children: [
-                        const TextSpan(
-                          text: 'AI가 ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF000000),
-                          ),
-                        ),
-                        TextSpan(
-                          text: _userName,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFC6091D),
+                            fontFamily: 'NanumSquareNeo',
+                            fontSize: 20,
+                            height: 35 / 20,
+                            letterSpacing: 2,
                           ),
+                          children: [
+                            const TextSpan(
+                              text: 'AI가 ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
+                            ),
+                            TextSpan(
+                              text: _userName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFC6091D),
+                              ),
+                            ),
+                            const TextSpan(
+                              text: '님의\n얼굴을 분석 중이에요···',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
+                            ),
+                          ],
                         ),
-                        const TextSpan(
-                          text: '님의\n얼굴을 분석 중이에요···',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF000000),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // ✨ Provider의 진행 상태 실시간 표시
+                      Consumer<AnalysisProvider>(
+                        builder: (context, analysisProvider, child) {
+                          if (analysisProvider.analysisStage.isNotEmpty) {
+                            return Column(
+                              children: [
+                                Text(
+                                  analysisProvider.analysisStage,
+                                  style: const TextStyle(
+                                    fontFamily: 'NanumSquareNeo',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF666666),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 12),
+                                // 진행률 표시
+                                if (analysisProvider.analysisProgress > 0)
+                                  Text(
+                                    '${(analysisProvider.analysisProgress * 100).toInt()}%',
+                                    style: const TextStyle(
+                                      fontFamily: 'NanumSquareNeo',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFE8B7D4),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -194,10 +256,41 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFE8B7D4),
-                    ),
+                  child: Column(
+                    children: [
+                      const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFFE8B7D4),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // ✨ 진행률 바 추가 (선택사항)
+                      Consumer<AnalysisProvider>(
+                        builder: (context, analysisProvider, child) {
+                          if (analysisProvider.analysisProgress > 0) {
+                            return Container(
+                              width: 200,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: analysisProvider.analysisProgress,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8B7D4),
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -40,6 +40,9 @@ mixin _$UserProfile {
   DateTime? get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
   DateTime? get updatedAt => throw _privateConstructorUsedError;
+  List<String>? get allergies => throw _privateConstructorUsedError;
+  @JsonKey(name: 'skin_concerns')
+  List<String>? get skinConcerns => throw _privateConstructorUsedError;
 
   /// Serializes this UserProfile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -67,7 +70,9 @@ abstract class $UserProfileCopyWith<$Res> {
       @JsonKey(name: 'skin_type') String? skinType,
       @JsonKey(name: 'profile_completed') bool? profileCompleted,
       @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+      @JsonKey(name: 'updated_at') DateTime? updatedAt,
+      List<String>? allergies,
+      @JsonKey(name: 'skin_concerns') List<String>? skinConcerns});
 }
 
 /// @nodoc
@@ -95,6 +100,8 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? profileCompleted = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? allergies = freezed,
+    Object? skinConcerns = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -137,6 +144,14 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      allergies: freezed == allergies
+          ? _value.allergies
+          : allergies // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      skinConcerns: freezed == skinConcerns
+          ? _value.skinConcerns
+          : skinConcerns // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
     ) as $Val);
   }
 }
@@ -159,7 +174,9 @@ abstract class _$$UserProfileImplCopyWith<$Res>
       @JsonKey(name: 'skin_type') String? skinType,
       @JsonKey(name: 'profile_completed') bool? profileCompleted,
       @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+      @JsonKey(name: 'updated_at') DateTime? updatedAt,
+      List<String>? allergies,
+      @JsonKey(name: 'skin_concerns') List<String>? skinConcerns});
 }
 
 /// @nodoc
@@ -185,6 +202,8 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? profileCompleted = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? allergies = freezed,
+    Object? skinConcerns = freezed,
   }) {
     return _then(_$UserProfileImpl(
       id: null == id
@@ -227,6 +246,14 @@ class __$$UserProfileImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      allergies: freezed == allergies
+          ? _value._allergies
+          : allergies // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      skinConcerns: freezed == skinConcerns
+          ? _value._skinConcerns
+          : skinConcerns // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
     ));
   }
 }
@@ -244,7 +271,11 @@ class _$UserProfileImpl implements _UserProfile {
       @JsonKey(name: 'skin_type') this.skinType,
       @JsonKey(name: 'profile_completed') this.profileCompleted,
       @JsonKey(name: 'created_at') this.createdAt,
-      @JsonKey(name: 'updated_at') this.updatedAt});
+      @JsonKey(name: 'updated_at') this.updatedAt,
+      final List<String>? allergies,
+      @JsonKey(name: 'skin_concerns') final List<String>? skinConcerns})
+      : _allergies = allergies,
+        _skinConcerns = skinConcerns;
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserProfileImplFromJson(json);
@@ -285,10 +316,30 @@ class _$UserProfileImpl implements _UserProfile {
   @override
   @JsonKey(name: 'updated_at')
   final DateTime? updatedAt;
+  final List<String>? _allergies;
+  @override
+  List<String>? get allergies {
+    final value = _allergies;
+    if (value == null) return null;
+    if (_allergies is EqualUnmodifiableListView) return _allergies;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<String>? _skinConcerns;
+  @override
+  @JsonKey(name: 'skin_concerns')
+  List<String>? get skinConcerns {
+    final value = _skinConcerns;
+    if (value == null) return null;
+    if (_skinConcerns is EqualUnmodifiableListView) return _skinConcerns;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'UserProfile(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, provider: $provider, birthYear: $birthYear, skinType: $skinType, profileCompleted: $profileCompleted, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserProfile(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, provider: $provider, birthYear: $birthYear, skinType: $skinType, profileCompleted: $profileCompleted, createdAt: $createdAt, updatedAt: $updatedAt, allergies: $allergies, skinConcerns: $skinConcerns)';
   }
 
   @override
@@ -312,13 +363,29 @@ class _$UserProfileImpl implements _UserProfile {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            const DeepCollectionEquality()
+                .equals(other._allergies, _allergies) &&
+            const DeepCollectionEquality()
+                .equals(other._skinConcerns, _skinConcerns));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, avatarUrl,
-      provider, birthYear, skinType, profileCompleted, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      email,
+      name,
+      avatarUrl,
+      provider,
+      birthYear,
+      skinType,
+      profileCompleted,
+      createdAt,
+      updatedAt,
+      const DeepCollectionEquality().hash(_allergies),
+      const DeepCollectionEquality().hash(_skinConcerns));
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -347,7 +414,9 @@ abstract class _UserProfile implements UserProfile {
           @JsonKey(name: 'skin_type') final String? skinType,
           @JsonKey(name: 'profile_completed') final bool? profileCompleted,
           @JsonKey(name: 'created_at') final DateTime? createdAt,
-          @JsonKey(name: 'updated_at') final DateTime? updatedAt}) =
+          @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+          final List<String>? allergies,
+          @JsonKey(name: 'skin_concerns') final List<String>? skinConcerns}) =
       _$UserProfileImpl;
 
   factory _UserProfile.fromJson(Map<String, dynamic> json) =
@@ -382,6 +451,11 @@ abstract class _UserProfile implements UserProfile {
   @override
   @JsonKey(name: 'updated_at')
   DateTime? get updatedAt;
+  @override
+  List<String>? get allergies;
+  @override
+  @JsonKey(name: 'skin_concerns')
+  List<String>? get skinConcerns;
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.

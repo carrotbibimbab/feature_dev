@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 # API 라우터 등록
-from app.api import analysis
+from app.api.v1 import analysis, health
 
 app.include_router(analysis.router)
 

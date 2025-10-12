@@ -16,23 +16,80 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _dataService = SupabaseDataService();
   final _nameController = TextEditingController();
   final _yearController = TextEditingController();
-  final _monthController = TextEditingController();
-  final _dayController = TextEditingController();
 
   String? _selectedSkinType;
+  final Set<String> _selectedAllergies = {};
+  final Set<String> _selectedConcerns = {};
+
+  // 일반적인 알레르기 항목
+  static const List<String> _allergyOptions = [
+    '향료',
+    '알코올',
+    '파라벤',
+    '살리실산',
+    '레티놀',
+    '벤조일퍼록사이드',
+    '나이아신아마이드',
+    '비타민C',
+    '없음',
+  ];
+
+  // 일반적인 피부 고민
+  static const List<String> _concernOptions = [
+    '여드름/뾰루지',
+    '모공',
+    '주름/잔주름',
+    '색소침착/기미',
+    '홍조/붉은기',
+    '탄력저하',
+    '건조함',
+    '과다피지',
+    '칙칙함',
+    '없음',
+  ];
 
   @override
   void dispose() {
     _nameController.dispose();
     _yearController.dispose();
-    _monthController.dispose();
-    _dayController.dispose();
     super.dispose();
   }
 
   void _toggleSkinType(String type) {
     setState(() {
       _selectedSkinType = _selectedSkinType == type ? null : type;
+    });
+  }
+
+  void _toggleAllergy(String allergy) {
+    setState(() {
+      if (_selectedAllergies.contains(allergy)) {
+        _selectedAllergies.remove(allergy);
+      } else {
+        // "없음"을 선택하면 다른 것들은 해제
+        if (allergy == '없음') {
+          _selectedAllergies.clear();
+        } else {
+          _selectedAllergies.remove('없음');
+        }
+        _selectedAllergies.add(allergy);
+      }
+    });
+  }
+
+  void _toggleConcern(String concern) {
+    setState(() {
+      if (_selectedConcerns.contains(concern)) {
+        _selectedConcerns.remove(concern);
+      } else {
+        // "없음"을 선택하면 다른 것들은 해제
+        if (concern == '없음') {
+          _selectedConcerns.clear();
+        } else {
+          _selectedConcerns.remove('없음');
+        }
+        _selectedConcerns.add(concern);
+      }
     });
   }
 
@@ -43,10 +100,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       return;
     }
 
-    if (_yearController.text.isEmpty ||
-        _monthController.text.isEmpty ||
-        _dayController.text.isEmpty) {
-      _showError('생년월일을 입력해주세요.');
+    if (_yearController.text.isEmpty) {
+      _showError('출생년도를 입력해주세요.');
       return;
     }
 
@@ -57,7 +112,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     final year = int.tryParse(_yearController.text);
     if (year == null || year < 1900 || year > DateTime.now().year) {
-      _showError('올바른 생년월일을 입력해주세요.');
+      _showError('올바른 출생년도를 입력해주세요 (예: 1990).');
       return;
     }
 
@@ -73,6 +128,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       name: _nameController.text,
       birthYear: year,
       skinType: _selectedSkinType!,
+      allergies: _selectedAllergies.toList(),
+      skinConcerns: _selectedConcerns.toList(),
     );
 
     if (success) {
@@ -102,28 +159,28 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 93),
+                const SizedBox(height: 60),
 
                 // 제목
                 const Text(
                   '회원님의 정보를\n입력해주세요 🪄',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w900,
                     fontSize: 32,
                     height: 50 / 32,
                     color: Color(0xFF000000),
                   ),
                 ),
 
-                const SizedBox(height: 74),
+                const SizedBox(height: 50),
 
                 // 이름
                 const Text(
                   '이름',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),
@@ -148,93 +205,35 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                 const SizedBox(height: 28),
 
-                // 생년월일
+                // 출생년도 (birth_year만 필요)
                 const Text(
-                  '생년월일',
+                  '출생년도',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    // 년
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _yearController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 4,
-                        decoration: InputDecoration(
-                          hintText: '년',
-                          filled: true,
-                          fillColor: const Color(0xFFF5F5F5),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          counterText: '',
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
+                TextField(
+                  controller: _yearController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 4,
+                  decoration: InputDecoration(
+                    hintText: '예) 1990',
+                    filled: true,
+                    fillColor: const Color(0xFFF5F5F5),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
                     ),
-                    const SizedBox(width: 8),
-                    const Text('/', style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 8),
-                    // 월
-                    Expanded(
-                      child: TextField(
-                        controller: _monthController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 2,
-                        decoration: InputDecoration(
-                          hintText: '월',
-                          filled: true,
-                          fillColor: const Color(0xFFF5F5F5),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          counterText: '',
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
+                    counterText: '',
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
-                    const SizedBox(width: 8),
-                    const Text('/', style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 8),
-                    // 일
-                    Expanded(
-                      child: TextField(
-                        controller: _dayController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 2,
-                        decoration: InputDecoration(
-                          hintText: '일',
-                          filled: true,
-                          fillColor: const Color(0xFFF5F5F5),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          counterText: '',
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
 
                 const SizedBox(height: 28),
@@ -243,8 +242,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 const Text(
                   '피부타입',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Color(0xFF434343),
                   ),
@@ -296,7 +295,77 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 215),
+                const SizedBox(height: 28),
+
+                // 알레르기 성분 (새로 추가)
+                const Text(
+                  '알레르기 또는 피해야 할 성분',
+                  style: TextStyle(
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: Color(0xFF434343),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  '중복 선택 가능',
+                  style: TextStyle(
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0xFF888888),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _allergyOptions.map((allergy) {
+                    return _buildChip(
+                      label: allergy,
+                      isSelected: _selectedAllergies.contains(allergy),
+                      onTap: () => _toggleAllergy(allergy),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: 28),
+
+                // 피부 고민 (새로 추가)
+                const Text(
+                  '피부 고민',
+                  style: TextStyle(
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: Color(0xFF434343),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  '중복 선택 가능',
+                  style: TextStyle(
+                    fontFamily: 'NanumSquareNeo',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0xFF888888),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _concernOptions.map((concern) {
+                    return _buildChip(
+                      label: concern,
+                      isSelected: _selectedConcerns.contains(concern),
+                      onTap: () => _toggleConcern(concern),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: 40),
 
                 // Save 버튼
                 GestureDetector(
@@ -329,6 +398,36 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         SkinTypeConstants.getButtonImage(type, isSelected: isSelected),
         width: width,
         height: height,
+      ),
+    );
+  }
+
+  Widget _buildChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF000000) : const Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF000000) : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: isSelected ? Colors.white : const Color(0xFF434343),
+          ),
+        ),
       ),
     );
   }

@@ -249,7 +249,7 @@ class _OnboardingPage extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Color(0xFF000000),
@@ -264,7 +264,7 @@ class _OnboardingPage extends StatelessWidget {
           child: Text(
             subtitle,
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Color(0xFFC6091D),
@@ -279,7 +279,7 @@ class _OnboardingPage extends StatelessWidget {
           child: Text(
             description,
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 15,
               color: Color(0xFF828282),
               height: 20 / 15,

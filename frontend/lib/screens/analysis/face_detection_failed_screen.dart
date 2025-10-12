@@ -18,8 +18,8 @@ class FaceDetectionFailedScreen extends StatelessWidget {
             const Text(
               '얼굴을 인식할 수 없습니다 🥲',
               style: TextStyle(
-                fontFamily: 'SF Pro Display',
-                fontWeight: FontWeight.w600,
+                fontFamily: 'NanumSquareNeo',
+                fontWeight: FontWeight.w700,
                 fontSize: 22,
                 letterSpacing: 0.11,
                 color: Color(0xFF000000),
@@ -42,7 +42,7 @@ class FaceDetectionFailedScreen extends StatelessWidget {
               '다음과 같은 상황에서는\n인식이 되지 않을 수 있어요!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 16,
                 letterSpacing: 0.11,
                 color: Color(0xFF828282),

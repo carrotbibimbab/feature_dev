@@ -66,7 +66,7 @@ class PermissionScreen extends StatelessWidget {
                 const Text(
                   '편리한 서비스 이용을 위한\n접근 권한 허용이 필요합니다.',
                   style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                    fontFamily: 'NanumSquareNeo',
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     height: 30 / 24, // 행간 30px
@@ -104,7 +104,7 @@ class PermissionScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10), // 모서리 반경 10
                       ),
                       textStyle: const TextStyle(
-                        fontFamily: 'SF Pro Display',
+                        fontFamily: 'NanumSquareNeo',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -138,7 +138,7 @@ class PermissionScreen extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontFamily: 'SF Pro Display',
+                  fontFamily: 'NanumSquareNeo',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -147,7 +147,7 @@ class PermissionScreen extends StatelessWidget {
               Text(
                 description,
                 style: const TextStyle(
-                  fontFamily: 'SF Pro Display',
+                  fontFamily: 'NanumSquareNeo',
                   fontSize: 16,
                   fontWeight: FontWeight.normal,
                   color: Colors.black54,

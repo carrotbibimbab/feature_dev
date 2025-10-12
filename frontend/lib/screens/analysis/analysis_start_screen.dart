@@ -44,8 +44,8 @@ class AnalysisStartScreen extends StatelessWidget {
                   const Text(
                     'Take a photo',
                     style: TextStyle(
-                      fontFamily: 'SF Pro Display',
-                      fontWeight: FontWeight.w600,
+                      fontFamily: 'NanumSquareNeo',
+                      fontWeight: FontWeight.w700,
                       fontSize: 24,
                       color: Colors.white,
                     ),
@@ -82,8 +82,8 @@ class AnalysisStartScreen extends StatelessWidget {
                   const Text(
                     'Choose from Gallery',
                     style: TextStyle(
-                      fontFamily: 'SF Pro Display',
-                      fontWeight: FontWeight.w600,
+                      fontFamily: 'NanumSquareNeo',
+                      fontWeight: FontWeight.w700,
                       fontSize: 24,
                       color: Colors.white,
                     ),
@@ -137,7 +137,7 @@ class AnalysisStartScreen extends StatelessWidget {
                   child: Text(
                     'AI 퍼스널 컬러\n및 피부 분석',
                     style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                      fontFamily: 'NanumSquareNeo',
                       fontWeight: FontWeight.bold,
                       fontSize: 48,
                       height: 50 / 48,

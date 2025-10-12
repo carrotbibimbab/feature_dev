@@ -145,7 +145,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 36,
                 height: 50 / 36,
                 letterSpacing: 0.11,
@@ -204,7 +204,15 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
           // 스킨케어 루틴
           _buildSkincareRoutineSection(),
+          
+          // ✨ 새로 추가: GPT 전문가 인사이트 섹션
+          _buildGptInsightSection(),
 
+          const SizedBox(height: 40),
+
+          // ✨ 새로 추가: 생활습관 조언 섹션
+          _buildLifestyleTipsSection(),
+          
           const SizedBox(height: 40),
 
           // 하단 버튼들
@@ -224,7 +232,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         RichText(
           text: const TextSpan(
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -232,7 +240,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               TextSpan(
                 text: '🎨 나의 ',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF000000),
                 ),
               ),
@@ -246,7 +254,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               TextSpan(
                 text: '는...',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF000000),
                 ),
               ),
@@ -271,8 +279,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '📝 특징',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -290,8 +298,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '✨ 인생 컬러 팔레트',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -364,7 +372,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         RichText(
           text: const TextSpan(
             style: TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 20,
               letterSpacing: 0.11,
             ),
@@ -372,7 +380,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               TextSpan(
                 text: '💆 나의 ',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF000000),
                 ),
               ),
@@ -386,7 +394,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               TextSpan(
                 text: '은...',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF000000),
                 ),
               ),
@@ -411,8 +419,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '📝 특징',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -433,8 +441,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '🚨 민감성 위험도 게이지',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -460,7 +468,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             _getSensitivityDescription(),
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontFamily: 'SF Pro Display',
+              fontFamily: 'NanumSquareNeo',
               fontSize: 15,
               height: 18 / 15,
             ),
@@ -478,8 +486,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '👁️‍🗨️ 피부 상세 분석',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -556,7 +564,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               child: Text(
                 '$score',
                 style: const TextStyle(
-                  fontFamily: 'SF Pro Display',
+                  fontFamily: 'NanumSquareNeo',
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: Color(0xFFE8B7D4),
@@ -583,7 +591,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                fontFamily: 'SF Pro Display',
+                fontFamily: 'NanumSquareNeo',
                 fontSize: 12,
                 height: 20 / 12,
               ),
@@ -618,8 +626,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const Text(
           '💧 핵심 솔루션: 스킨케어 루틴',
           style: TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
+            fontFamily: 'NanumSquareNeo',
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
@@ -632,7 +640,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               child: RichText(
                 text: TextSpan(
                   style: const TextStyle(
-                    fontFamily: 'SF Pro Display',
+                    fontFamily: 'NanumSquareNeo',
                     fontSize: 15,
                     height: 18 / 15,
                   ),
@@ -658,6 +666,139 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           }).toList(),
       ],
     );
+  }
+/// GPT 전문가 인사이트 섹션
+Widget _buildGptInsightSection() {
+  // rawAnalysisData에서 GPT 가이드 추출
+  final gptGuide = widget.result.rawAnalysisData?['gpt_guide'] as Map<String, dynamic>?;
+  final professionalInsight = gptGuide?['professional_insight'] as String?;
+  
+  if (professionalInsight == null || professionalInsight.isEmpty) {
+    return const SizedBox.shrink(); // 데이터 없으면 숨김
+  }
+  
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [Color(0xFFE8B7D4), Color(0xFFF5E6F0)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '💡',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              '전문가 조언',
+              style: TextStyle(
+                fontFamily: 'NanumSquareNeo',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Color(0xFF000000),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            professionalInsight,
+            style: const TextStyle(
+              fontFamily: 'NanumSquareNeo',
+              fontSize: 15,
+              height: 1.6,
+              color: Color(0xFF333333),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// 생활습관 조언 섹션
+Widget _buildLifestyleTipsSection() {
+  final gptGuide = widget.result.rawAnalysisData?['gpt_guide'] as Map<String, dynamic>?;
+  final lifestyleTips = gptGuide?['lifestyle_tips'] as List?;
+  
+  if (lifestyleTips == null || lifestyleTips.isEmpty) {
+    return const SizedBox.shrink();
+  }
+  
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        '🌱 생활습관 조언',
+        style: TextStyle(
+          fontFamily: 'NanumSquareNeo',
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
+          letterSpacing: 0.11,
+        ),
+      ),
+      const SizedBox(height: 16),
+      ...lifestyleTips.map((tip) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE8B7D4),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  tip.toString(),
+                  style: const TextStyle(
+                    fontFamily: 'NanumSquareNeo',
+                    fontSize: 15,
+                    height: 1.5,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    ],
+  );
   }
 
   // 하단 버튼들
@@ -690,7 +831,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     return Text(
       text,
       style: const TextStyle(
-        fontFamily: 'SF Pro Display',
+        fontFamily: 'NanumSquareNeo',
         fontSize: 15,
         height: 18 / 15,
       ),

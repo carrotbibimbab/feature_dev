@@ -47,12 +47,16 @@ class SupabaseDataService {
     String? name,
     int? birthYear,
     String? skinType,
+    List<String>? allergies,        // 추가
+    List<String>? skinConcerns,     // 추가
   }) async {
     try {
       final updates = <String, dynamic>{};
       if (name != null) updates['name'] = name;
       if (birthYear != null) updates['birth_year'] = birthYear;
       if (skinType != null) updates['skin_type'] = skinType;
+      if (allergies != null) updates['allergies'] = allergies;
+      if (skinConcerns != null) updates['skin_concerns'] = skinConcerns;
       updates['profile_completed'] = true;
 
       await _supabase.from(Tables.profiles).update(updates).eq('id', userId);
@@ -277,6 +281,29 @@ class SupabaseDataService {
       return null;
     }
   }
+}
+class Tables {
+  static const profiles = 'profiles';
+  static const uploadedImages = 'uploaded_images';
+  static const analyses = 'analyses';
+  static const beautyGuides = 'beauty_guides';  // GPT 가이드용
+  static const userActivities = 'user_activities';
+}
+
+class Views {
+  static const userDashboardSummary = 'user_dashboard_summary';
+}
+
+class StorageBuckets {
+  static const profileImages = 'profile_images';
+  static const userUploads = 'user_uploads';
+}
+
+class AnalysisStatus {
+  static const pending = 'pending';
+  static const processing = 'processing';
+  static const completed = 'completed';
+  static const failed = 'failed';
 }
 
 // File import for uploadProfileImage and uploadAnalysisImage
