@@ -22,3 +22,14 @@ class AppConfig {
   // 개발 모드 표시 여부
   static bool get showDevBadge => isDevelopmentMode;
 }
+
+class ApiConfig {
+  static const baseUrl = 'https://backend-6xc5.onrender.com';
+  
+  // 인증
+  static const loginUrl = '$baseUrl/login';
+  
+  // 분석 API
+  static const analysisUrl = '$baseUrl/api/v1/analysis/comprehensive';
+  static const historyUrl = '$baseUrl/api/v1/analysis/history';
+}

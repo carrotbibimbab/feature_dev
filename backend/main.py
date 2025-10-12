@@ -239,26 +239,52 @@ async def login(request: Request):
 
 @app.get("/auth/google/callback")
 async def auth_callback(request: Request):
-    # ... 기존 OAuth 처리 ...
+    try:
+        # 1. OAuth 토큰 받기
+        token = await oauth.google.authorize_access_token(request)
+        userinfo = token.get("userinfo")
+        
+        if not userinfo:
+            raise HTTPException(status_code=400, detail="Failed to get user info")
+        
+        # 2. 세션에 사용자 정보 저장 (웹용)
+        request.session["user"] = {
+            "sub": userinfo.get("sub"),
+            "email": userinfo.get("email"),
+            "name": userinfo.get("name"),
+            "picture": userinfo.get("picture"),
+        }
+        
+        # 3. JWT 토큰 발급 (앱용)
+        jwt_token = create_access_token({
+            "sub": userinfo.get("sub"),
+            "email": userinfo.get("email"),
+            "name": userinfo.get("name"),
+            "picture": userinfo.get("picture"),
+        })
+        
+        # 4. User-Agent에 따라 리디렉트 분기
+        user_agent = request.headers.get("user-agent", "").lower()
+        
+        if "flutter" in user_agent or request.query_params.get("platform") == "mobile":
+            # Flutter 앱으로 리디렉트
+            flutter_callback = f"myapp://login-callback?token={jwt_token}"
+            return RedirectResponse(url=flutter_callback)
+        else:
+            # 웹 브라우저로 리디렉트
+            state = request.query_params.get("state")
+            next_url = "/profile"
+            if state:
+                try:
+                    state_data = state_signer.loads(state)
+                    next_url = state_data.get("next", "/profile")
+                except:
+                    pass
+            return RedirectResponse(url=next_url)
     
-    request.session["user"] = {
-        "sub": userinfo.get("sub"),
-        "email": userinfo.get("email"),
-        "name": userinfo.get("name"),
-        "picture": userinfo.get("picture"),
-    }
-    
-    # 🔥 JWT 토큰 발급
-    token = create_access_token({
-        "sub": userinfo.get("sub"),
-        "email": userinfo.get("email"),
-        "name": userinfo.get("name"),
-        "picture": userinfo.get("picture"),
-    })
-    
-    # Flutter 앱으로 리디렉트 (토큰 포함)
-    flutter_callback = f"myapp://login-callback?token={token}"
-    return RedirectResponse(url=flutter_callback)
+    except Exception as e:
+        print(f"❌ OAuth callback error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"OAuth 인증 실패: {str(e)}")
 
 @app.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request):
