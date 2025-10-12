@@ -4,6 +4,7 @@ import 'package:bf_app/models/user_profile.dart';
 import 'package:bf_app/services/supabase_data_service.dart';
 import 'package:bf_app/services/supabase_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bf_app/utils/auth_helper.dart'; 
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -117,11 +118,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     }
 
     // 프로필 저장
-    final userId = SupabaseConfig.currentUser?.id;
+    final userId = await AuthHelper.getCurrentUserId();
+  
     if (userId == null) {
       _showError('로그인이 필요합니다.');
       return;
-    }
+  }
 
     final success = await _dataService.updateProfile(
       userId: userId,

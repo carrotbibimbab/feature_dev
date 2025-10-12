@@ -1,19 +1,32 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';  // ✨ 추가
+import 'package:provider/provider.dart';  
 import 'package:bf_app/constants/colors.dart';
 import 'package:bf_app/utils/router_config.dart';
 import 'package:bf_app/services/supabase_service.dart';
 import 'package:bf_app/providers/auth_provider.dart';
-import 'package:bf_app/providers/analysis_provider.dart';  // ✨ 추가
+import 'package:bf_app/providers/analysis_provider.dart';  
+import 'package:flutter_dotenv/flutter_dotenv.dart'; 
 
 void main() async {
   // Flutter 바인딩 초기화
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    //  .env 파일 로드
+    print(' .env 파일 로드 중...');
+    await dotenv.load(fileName: ".env");
+    print(' .env 파일 로드 완료');
 
-  // Supabase 초기화
-  await SupabaseConfig.initialize();
+    // Supabase 초기화
+    print(' Supabase 초기화 중...');
+    await SupabaseConfig.initialize();
+    print(' Supabase 초기화 완료');
+
+  } catch (e) {
+    print(' 초기화 실패: $e');
+    // 에러 발생 시에도 앱은 실행되도록 (개발 중)
+  }
 
   // 상태바 스타일 설정
   SystemChrome.setSystemUIOverlayStyle(

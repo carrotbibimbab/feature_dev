@@ -1,11 +1,12 @@
 //lib\services\supabase_service.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';  
 
 class SupabaseConfig {
   // Supabase 프로젝트 설정
-  static const String supabaseUrl = 'https://qpbzqpewnzoqpizzmrep.supabase.co/';
-  static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwYnpxcGV3bnpvcXBpenptcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NjU3NTcsImV4cCI6MjA3NDQ0MTc1N30.pptSav6l3uooMpvQnG4mM07AKRnD1THQ1uT_MR9mPNo';
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
   // Supabase 초기화
   static Future<void> initialize() async {
@@ -31,6 +32,18 @@ class SupabaseConfig {
   // 인증 상태 스트림
   static Stream<AuthState> get authStateChanges =>
       client.auth.onAuthStateChange;
+
+  static Future<String?> getCurrentUserId() async {
+    // 1. Supabase 사용자 확인
+    final supabaseUser = client.auth.currentUser;
+    if (supabaseUser != null) {
+      return supabaseUser.id;
+    }
+
+    // 2. SharedPreferences에서 개발자 모드 사용자 확인
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_sub');
+  }
 }
 
 // Storage 버킷 이름 (간소화)
