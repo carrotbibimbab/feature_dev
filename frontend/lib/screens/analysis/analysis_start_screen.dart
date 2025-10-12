@@ -6,13 +6,13 @@ import 'package:image_picker/image_picker.dart';
 class AnalysisStartScreen extends StatelessWidget {
   const AnalysisStartScreen({super.key});
 
-  Future<void> _showImageSourceDialog(BuildContext context) async {
+  Future<void> _showImageSourceDialog(BuildContext parentContext) async {
     final ImagePicker picker = ImagePicker();
 
     showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.7), // 어두운 배경
-      builder: (context) => Dialog(
+      context: parentContext,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: Column(
@@ -21,16 +21,26 @@ class AnalysisStartScreen extends StatelessWidget {
             // 카메라
             GestureDetector(
               onTap: () async {
-                Navigator.pop(context);
+                // ✅ 1. dialogContext로 다이얼로그만 닫기
+                Navigator.pop(dialogContext);
+                
+                // ✅ 2. 이미지 촬영
                 final XFile? image = await picker.pickImage(
                   source: ImageSource.camera,
                   maxWidth: 1920,
                   maxHeight: 1920,
                   imageQuality: 85,
                 );
-
-                if (image != null && context.mounted) {
-                  context.push('/analyzing', extra: image.path);
+                
+                print('📸 이미지 촬영 완료: ${image?.path}');
+                
+                // ✅ 3. parentContext로 화면 전환 (항상 mounted 상태!)
+                if (image != null && parentContext.mounted) {
+                  print('✅ 라우팅 시작: /analyzing');
+                  parentContext.push('/analyzing', extra: image.path);
+                  print('✅ 라우팅 호출 완료');
+                } else if (image == null) {
+                  print('❌ 이미지가 없습니다 (사용자가 취소)');
                 }
               },
               child: Column(
@@ -59,7 +69,10 @@ class AnalysisStartScreen extends StatelessWidget {
             // 갤러리
             GestureDetector(
               onTap: () async {
-                Navigator.pop(context);
+                // ✅ 1. dialogContext로 다이얼로그만 닫기
+                Navigator.pop(dialogContext);
+                
+                // ✅ 2. 이미지 선택
                 final XFile? image = await picker.pickImage(
                   source: ImageSource.gallery,
                   maxWidth: 1920,
@@ -67,8 +80,15 @@ class AnalysisStartScreen extends StatelessWidget {
                   imageQuality: 85,
                 );
 
-                if (image != null && context.mounted) {
-                  context.push('/analyzing', extra: image.path);
+                print('📸 이미지 선택 완료: ${image?.path}');
+                
+                // ✅ 3. parentContext로 화면 전환 (항상 mounted 상태!)
+                if (image != null && parentContext.mounted) {
+                  print('✅ 라우팅 시작: /analyzing');
+                  parentContext.push('/analyzing', extra: image.path);
+                  print('✅ 라우팅 호출 완료');
+                } else if (image == null) {
+                  print('❌ 이미지가 없습니다 (사용자가 취소)');
                 }
               },
               child: Column(

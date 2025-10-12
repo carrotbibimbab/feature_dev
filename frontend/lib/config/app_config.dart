@@ -3,12 +3,12 @@
 /// 앱 환경 설정
 class AppConfig {
   // 개발 모드 활성화 (배포 시 false로 변경)
-  static const bool isDevelopmentMode = true;
+  static const bool isDevelopmentMode = false;
   
   // 개발 모드 테스트 사용자
   static const Map<String, String> testUser = {
-    'sub': 'test-user-001',
-    'email': 'test@example.com',
+    'sub': '00000000-0000-0000-0000-000000000001',
+    'email': 'demo@vupa.ai',
     'name': '테스트 사용자',
     'picture': 'https://via.placeholder.com/150',
   };

@@ -224,145 +224,112 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
   }
 
-  // 퍼스널 컬러 섹션
   Widget _buildPersonalColorSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: const TextSpan(
-            style: TextStyle(
-              fontFamily: 'NanumSquareNeo',
-              fontSize: 20,
-              letterSpacing: 0.11,
-            ),
-            children: [
-              TextSpan(
-                text: '🎨 나의 ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF000000),
-                ),
-              ),
-              TextSpan(
-                text: '퍼스널 컬러',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFC6091D),
-                ),
-              ),
-              TextSpan(
-                text: '는...',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF000000),
-                ),
-              ),
-            ],
-          ),
-        ),
+  final pc = widget.result.personalColor; // 서버 응답에 없을 수도 있음
+  final pcImagePath = PersonalColorType.getImagePath(pc ?? '');
+  final hasPersonalColor = (pc != null && pc.isNotEmpty);
 
-        const SizedBox(height: 20),
-
-        // 퍼스널 컬러 카드
-        Center(
-          child: Image.asset(
-            PersonalColorType.getImagePath(widget.result.personalColor ?? ''),
-            width: 250,
-            height: 296,
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
-        // 특징
-        const Text(
-          '📝 특징',
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // (제목 영역 동일)
+      RichText(
+        text: const TextSpan(
           style: TextStyle(
             fontFamily: 'NanumSquareNeo',
-            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.11,
           ),
+          children: [
+            TextSpan(
+              text: '🎨 나의 ',
+              style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF000000)),
+            ),
+            TextSpan(
+              text: '퍼스널 컬러',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFC6091D)),
+            ),
+            TextSpan(
+              text: '는...',
+              style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF000000)),
+            ),
+          ],
         ),
+      ),
+      const SizedBox(height: 20),
 
-        const SizedBox(height: 12),
-
-        // 특징 내용 (AI 생성 텍스트)
-        if (widget.result.personalColorDescription != null)
-          _buildBulletPoints(widget.result.personalColorDescription!),
-
-        const SizedBox(height: 30),
-
-        // 인생 컬러 팔레트
+      // 카드
+      Center(
+        child: hasPersonalColor
+            ? Image.asset(pcImagePath, width: 250, height: 296)
+            : Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  PersonalColorType.getImagePath(''), // 빈 값 대비용 기본 이미지
+                  width: 250,
+                  height: 296,
+                ),
+              ),
+      ),
+      const SizedBox(height: 12),
+      if (!hasPersonalColor)
         const Text(
-          '✨ 인생 컬러 팔레트',
-          style: TextStyle(
-            fontFamily: 'NanumSquareNeo',
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            letterSpacing: 0.11,
+          '퍼스널 컬러 결과를 불러오는 중입니다. 잠시 후 분석 로그에서 확인해 주세요.',
+          style: TextStyle(fontFamily: 'NanumSquareNeo', fontSize: 13, color: Colors.grey),
+        ),
+
+      const SizedBox(height: 20),
+
+      const Text('📝 특징',
+          style: TextStyle(fontFamily: 'NanumSquareNeo', fontWeight: FontWeight.w700, fontSize: 20, letterSpacing: 0.11)),
+      const SizedBox(height: 12),
+      if (widget.result.personalColorDescription != null)
+        _buildBulletPoints(widget.result.personalColorDescription!),
+
+      const SizedBox(height: 30),
+      const Text('✨ 인생 컬러 팔레트',
+          style: TextStyle(fontFamily: 'NanumSquareNeo', fontWeight: FontWeight.w700, fontSize: 20, letterSpacing: 0.11)),
+      const SizedBox(height: 20),
+
+      // BEST/WORST 팔레트는 기존 로직 그대로 (null-safe)
+      // ...
+      Stack(
+        children: [
+          Image.asset('assets/17/palette_best.png', width: 337, height: 122),
+          Positioned(
+            left: 30, top: 50,
+            child: Row(
+              children: widget.result.bestColors?.take(4).map((color) {
+                return Container(
+                  width: 50, height: 50, margin: const EdgeInsets.only(right: 12),
+                  color: _parseColor(color),
+                );
+              }).toList() ?? [],
+            ),
           ),
-        ),
-
-        const SizedBox(height: 20),
-
-        // BEST 팔레트
-        Stack(
-          children: [
-            Image.asset(
-              'assets/17/palette_best.png',
-              width: 337,
-              height: 122,
+        ],
+      ),
+      const SizedBox(height: 18),
+      Stack(
+        children: [
+          Image.asset('assets/17/palette_worst.png', width: 337, height: 122),
+          Positioned(
+            left: 30, top: 50,
+            child: Row(
+              children: widget.result.worstColors?.take(4).map((color) {
+                return Container(
+                  width: 50, height: 50, margin: const EdgeInsets.only(right: 12),
+                  color: _parseColor(color),
+                );
+              }).toList() ?? [],
             ),
-            Positioned(
-              left: 30,
-              top: 50,
-              child: Row(
-                children: widget.result.bestColors?.take(4).map((color) {
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        margin: const EdgeInsets.only(right: 12),
-                        color: _parseColor(color),
-                      );
-                    }).toList() ??
-                    [],
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 18),
-
-        // WORST 팔레트
-        Stack(
-          children: [
-            Image.asset(
-              'assets/17/palette_worst.png',
-              width: 337,
-              height: 122,
-            ),
-            Positioned(
-              left: 30,
-              top: 50,
-              child: Row(
-                children: widget.result.worstColors?.take(4).map((color) {
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        margin: const EdgeInsets.only(right: 12),
-                        color: _parseColor(color),
-                      );
-                    }).toList() ??
-                    [],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+          ),
+        ],
+      ),
+    ],
+  );
   }
+
 
   // 피부 타입 섹션
   Widget _buildSkinTypeSection() {
@@ -478,51 +445,49 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
   }
 
-  // 피부 상세 분석 섹션
   Widget _buildDetailedAnalysisSection() {
+    // AnalysisResult 안에 sensitivity 객체가 있다고 가정 (없다면 DataService에서 매핑 필요)
+    final s = widget.result.sensitivity;
+
+    final poreScore        = _toInt0(s?.pore);          // 0~100
+    final elasticityScore  = _toInt0(s?.elasticity);    // 0~100
+    final pigmentation     = _toInt0(s?.pigmentation);  // 0~100
+    final dryness          = _toInt0(s?.dryness);       // 0~100
+
+  // 과거 UI 호환: wrinkle/acne 있으면 사용, 없으면 숨김 or 0
+    final wrinkleScore = widget.result.wrinkleScore ?? 0;
+    final acneScore    = widget.result.acneScore ?? 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '👁️‍🗨️ 피부 상세 분석',
-          style: TextStyle(
-            fontFamily: 'NanumSquareNeo',
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            letterSpacing: 0.11,
+        '👁️‍🗨️ 피부 상세 분석',
+        style: TextStyle(
+          fontFamily: 'NanumSquareNeo',
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
+          letterSpacing: 0.11,
           ),
         ),
         const SizedBox(height: 20),
-        _buildDetailItem(
-          'assets/17/pb_mogong.png',
-          '모공',
-          widget.result.poreScore ?? 0,
-          widget.result.poreDescription,
-        ),
+        _buildDetailItem('assets/17/pb_mogong.png', '모공', poreScore, widget.result.poreDescription),
         const SizedBox(height: 20),
-        _buildDetailItem(
-          'assets/17/pb_wrinkle.png',
-          '주름',
-          widget.result.wrinkleScore ?? 0,
-          widget.result.wrinkleDescription,
-        ),
+        _buildDetailItem('assets/17/pb_wrinkle.png', '주름', wrinkleScore, widget.result.wrinkleDescription),
         const SizedBox(height: 20),
-        _buildDetailItem(
-          'assets/17/pb_tan.png',
-          '탄력',
-          widget.result.elasticityScore ?? 0,
-          widget.result.elasticityDescription,
-        ),
+        _buildDetailItem('assets/17/pb_tan.png', '탄력', elasticityScore, widget.result.elasticityDescription),
         const SizedBox(height: 20),
-        _buildDetailItem(
-          'assets/17/pb_pimple.png',
-          '여드름',
-          widget.result.acneScore ?? 0,
-          widget.result.acneDescription,
-        ),
+        _buildDetailItem('assets/17/pb_pimple.png', '여드름', acneScore, widget.result.acneDescription),
+        const SizedBox(height: 20),
+        _buildDetailItem('assets/17/pb_tan.png', '색소침착', pigmentation, null),
+        const SizedBox(height: 20),
+        _buildDetailItem('assets/17/pb_tan.png', '건조도', dryness, null),
       ],
     );
   }
+
+  int _toInt0(num? v) => ((v ?? 0).clamp(0, 100)).toInt();
+
 
   Widget _buildDetailItem(
       String imagePath, String label, int score, String? description) {
@@ -667,16 +632,18 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       ],
     );
   }
-/// GPT 전문가 인사이트 섹션
+/// GPT 전문가 인사이트 섹션 (ai_analysis 사용)
 Widget _buildGptInsightSection() {
-  // rawAnalysisData에서 GPT 가이드 추출
-  final gptGuide = widget.result.rawAnalysisData?['gpt_guide'] as Map<String, dynamic>?;
-  final professionalInsight = gptGuide?['professional_insight'] as String?;
-  
-  if (professionalInsight == null || professionalInsight.isEmpty) {
-    return const SizedBox.shrink(); // 데이터 없으면 숨김
+  // 서버 응답의 ai_analysis 사용
+  final ai = widget.result.aiAnalysis; // AnalysisResult 안에 aiAnalysis가 매핑되어 있어야 합니다.
+  if (ai == null) return const SizedBox.shrink();
+
+  final professionalInsight = ai.summary; // 핵심 요약을 전문가 코멘트처럼 노출
+
+  if (professionalInsight.isEmpty) {
+    return const SizedBox.shrink();
   }
-  
+
   return Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
@@ -705,10 +672,7 @@ Widget _buildGptInsightSection() {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                '💡',
-                style: TextStyle(fontSize: 24),
-              ),
+              child: const Text('💡', style: TextStyle(fontSize: 24)),
             ),
             const SizedBox(width: 12),
             const Text(
@@ -744,15 +708,15 @@ Widget _buildGptInsightSection() {
   );
 }
 
-/// 생활습관 조언 섹션
+
+/// 생활습관 조언 섹션 (ai_analysis.recommendations 사용)
 Widget _buildLifestyleTipsSection() {
-  final gptGuide = widget.result.rawAnalysisData?['gpt_guide'] as Map<String, dynamic>?;
-  final lifestyleTips = gptGuide?['lifestyle_tips'] as List?;
-  
-  if (lifestyleTips == null || lifestyleTips.isEmpty) {
-    return const SizedBox.shrink();
-  }
-  
+  final ai = widget.result.aiAnalysis;
+  if (ai == null) return const SizedBox.shrink();
+
+  final lifestyleTips = ai.recommendations; // 추천 사항을 생활습관 조언처럼 노출
+  if (lifestyleTips.isEmpty) return const SizedBox.shrink();
+
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -799,7 +763,8 @@ Widget _buildLifestyleTipsSection() {
       }).toList(),
     ],
   );
-  }
+}
+
 
   // 하단 버튼들
   Widget _buildBottomButtons() {
@@ -850,6 +815,7 @@ Widget _buildLifestyleTipsSection() {
       case 'caution':
         return '피부가 다소 민감합니다. 자극적인 성분은 피하고, 진정 효과가 있는 제품을 사용하세요.';
       case 'moderate':
+      case 'medium':
         return '보통 수준의 민감도입니다. 일반적인 제품 사용이 가능하나, 피부 상태를 주의 깊게 관찰하세요.';
       case 'low':
         return '민감도가 낮은 편입니다. 다양한 제품 사용이 가능하지만, 과도한 자극은 피하세요.';

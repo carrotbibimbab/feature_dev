@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';  // ⭐ 추가
 import 'package:go_router/go_router.dart';
 import 'package:bf_app/screens/splash/splash_screen.dart';
 import 'package:bf_app/screens/onboarding/onboarding_screen.dart';
@@ -15,6 +16,7 @@ import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/screens/analysis/analysis_log_screen.dart';
 import 'package:bf_app/screens/intro/intro_screen.dart';
 import 'package:bf_app/screens/analysis/face_detection_failed_screen.dart';
+
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -80,10 +82,24 @@ class AppRouter {
         builder: (context, state) => const AnalysisStartScreen(),
       ),
 
+      // ⭐ Analyzing Screen - 수정됨
       GoRoute(
         path: '/analyzing',
         builder: (context, state) {
-          final imagePath = state.extra as String;
+          // ✅ nullable String으로 캐스팅
+          final imagePath = state.extra as String?;
+          
+          // null 체크가 이제 제대로 작동합니다
+          if (imagePath == null) {
+            // 에러 발생 시 이전 화면으로 돌아가기
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go('/analysis-start');
+            });
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          
           return AnalyzingScreen(imagePath: imagePath);
         },
       ),

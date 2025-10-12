@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class SupabaseConfig {
   // Supabase 프로젝트 설정
   static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
-  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_KEY'] ?? '';
 
   // Supabase 초기화
   static Future<void> initialize() async {

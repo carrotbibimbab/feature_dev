@@ -64,7 +64,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 
   # ⭐ 코드 생성을 위한 필수 개발 도구들 추가
-  build_runner: ^2.4.9
+  build_runner: ^2.5.4
   freezed: ^2.5.2
   json_serializable: ^6.8.0
 

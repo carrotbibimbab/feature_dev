@@ -4,9 +4,10 @@ import 'package:bf_app/services/supabase_data_service.dart';
 import 'package:bf_app/services/auth_service.dart';
 import 'package:bf_app/models/user_profile.dart';
 import 'package:bf_app/models/analysis_result.dart';
+import 'package:bf_app/utils/auth_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
@@ -52,22 +53,45 @@ class _MyPageScreenState extends State<MyPageScreen> {
     );
 
     if (image != null && _profile != null) {
-      // 이미지 업로드
-      final imageUrl = await _dataService.uploadProfileImage(
-        _profile!.id,
-        image.path,
-      );
-
-      if (imageUrl != null) {
-        // 프로필 업데이트
-        await _dataService.updateProfile(
-          userId: _profile!.id,
-          name: _profile!.name,
+      try {
+        // 이미지 업로드
+        final imageUrl = await _dataService.uploadProfileImage(
+          _profile!.id,
+          image.path,
         );
 
-        setState(() {
-          _profileImageUrl = imageUrl;
-        });
+        if (imageUrl != null) {
+          // 🔥 수정: 모든 필수 파라미터 포함
+          final userId = await AuthHelper.getCurrentUserId();
+          if (userId == null) {
+            _showError('로그인이 필요합니다.');
+            return;
+          }
+
+          await _dataService.updateProfile(
+            userId: userId,
+            name: _profile!.name,
+            birthYear: _profile!.birthYear ?? DateTime.now().year - 25, // 기본값
+            skinType: _profile!.skinType ?? 'normal', // 기본값
+            allergies: _profile!.allergies ?? [], // 기존 값 유지
+            skinConcerns: _profile!.skinConcerns ?? [], // 기존 값 유지
+          );
+
+          setState(() {
+            _profileImageUrl = imageUrl;
+          });
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('프로필 사진이 변경되었습니다')),
+            );
+          }
+        }
+      } catch (e) {
+        print('❌ 프로필 이미지 업로드 실패: $e');
+        if (mounted) {
+          _showError('이미지 업로드에 실패했습니다.');
+        }
       }
     }
   }
@@ -77,6 +101,12 @@ class _MyPageScreenState extends State<MyPageScreen> {
     if (mounted) {
       context.go('/login');
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -177,7 +207,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                   // 생년월일
                                   if (_profile?.birthYear != null)
                                     Text(
-                                      '${_profile!.birthYear}.10.12',
+                                      '${_profile!.birthYear}년생',
                                       style: const TextStyle(
                                         fontFamily: 'NanumSquareNeo',
                                         fontWeight: FontWeight.w700,
@@ -193,18 +223,18 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                     Wrap(
                                       spacing: 8,
                                       children: [
-                                        _buildHashTag(
-                                          PersonalColorType.toHashtag(
-                                            _latestAnalysis!.personalColor ??
-                                                '',
+                                        if (_latestAnalysis!.personalColor != null)
+                                          _buildHashTag(
+                                            PersonalColorType.toHashtag(
+                                              _latestAnalysis!.personalColor!,
+                                            ),
                                           ),
-                                        ),
-                                        _buildHashTag(
-                                          SkinType.toHashtag(
-                                            _latestAnalysis!.detectedSkinType ??
-                                                '',
+                                        if (_latestAnalysis!.detectedSkinType != null)
+                                          _buildHashTag(
+                                            SkinType.toHashtag(
+                                              _latestAnalysis!.detectedSkinType!,
+                                            ),
                                           ),
-                                        ),
                                       ],
                                     ),
                                 ],
@@ -339,6 +369,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
   }
 
   Future<void> _launchURL(String url) async {
-    // url_launcher 사용 (이전과 동일)
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }

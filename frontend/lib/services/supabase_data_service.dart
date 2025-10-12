@@ -5,9 +5,12 @@ import 'package:bf_app/services/supabase_service.dart';
 import 'package:bf_app/models/user_profile.dart';
 import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/models/uploaded_image.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+
 
 class SupabaseDataService {
-  final _supabase = SupabaseConfig.client;
+  final _client = SupabaseConfig.client;
 
   // ==================== 프로필 관련 ====================
 
@@ -17,7 +20,7 @@ class SupabaseDataService {
       final userId = SupabaseConfig.currentUser?.id;
       if (userId == null) return null;
 
-      final response = await _supabase
+      final response = await _client
           .from(Tables.profiles)
           .select()
           .eq('id', userId)
@@ -33,7 +36,7 @@ class SupabaseDataService {
   // 프로필 생성/업데이트 (화면 5, 11)
   Future<bool> upsertProfile(UserProfile profile) async {
     try {
-      await _supabase.from(Tables.profiles).upsert(profile.toJson());
+      await _client.from(Tables.profiles).upsert(profile.toJson());
       return true;
     } catch (e) {
       print('Error upserting profile: $e');
@@ -44,28 +47,48 @@ class SupabaseDataService {
   // 프로필 업데이트 (화면 11: 개인정보 수정)
   Future<bool> updateProfile({
     required String userId,
-    String? name,
-    int? birthYear,
-    String? skinType,
-    List<String>? allergies,        // 추가
-    List<String>? skinConcerns,     // 추가
+    required String name,
+    required int birthYear,
+    required String skinType,
+    required List<String> allergies,
+    required List<String> skinConcerns,
   }) async {
     try {
-      final updates = <String, dynamic>{};
-      if (name != null) updates['name'] = name;
-      if (birthYear != null) updates['birth_year'] = birthYear;
-      if (skinType != null) updates['skin_type'] = skinType;
-      if (allergies != null) updates['allergies'] = allergies;
-      if (skinConcerns != null) updates['skin_concerns'] = skinConcerns;
-      updates['profile_completed'] = true;
+      print('🔄 프로필 업데이트 시작');
+      print('   - userId: $userId');
+      print('   - name: $name');
+      print('   - birthYear: $birthYear');
+      print('   - skinType: $skinType');
 
-      await _supabase.from(Tables.profiles).update(updates).eq('id', userId);
+      final data = {
+        'user_id': userId,  // 👈 TEXT 타입
+        'name': name,
+        'birth_year': birthYear,
+        'skin_type': skinType,
+        'allergies': allergies,
+        'skin_concerns': skinConcerns,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
 
+      print('📤 전송 데이터: $data');
+
+      final response = await _client
+          .from('profiles')
+          .upsert(data,
+          onConflict: 'user_id')
+          .select();
+
+      print('✅ 프로필 업데이트 성공');
+      print('   응답: $response');
+      
       return true;
-    } catch (e) {
-      print('Error updating profile: $e');
+
+    } catch (e, stackTrace) {
+      print('❌ 프로필 업데이트 실패: $e');
+      print('   스택: $stackTrace');
       return false;
     }
+  
   }
 
   // ==================== 이미지 업로드 관련 ====================
@@ -78,7 +101,7 @@ class SupabaseDataService {
     int? fileSize,
   }) async {
     try {
-      final response = await _supabase
+      final response = await _client
           .from(Tables.uploadedImages)
           .insert({
             'user_id': userId,
@@ -103,7 +126,7 @@ class SupabaseDataService {
     required String status,
   }) async {
     try {
-      await _supabase.from(Tables.uploadedImages).update({
+      await _client.from(Tables.uploadedImages).update({
         'analysis_status': status,
         if (status == AnalysisStatus.completed)
           'analyzed_at': DateTime.now().toIso8601String(),
@@ -121,7 +144,7 @@ class SupabaseDataService {
   // 분석 결과 저장 (화면 16)
   Future<AnalysisResult?> saveAnalysisResult(AnalysisResult result) async {
     try {
-      final response = await _supabase
+      final response = await _client
           .from(Tables.analyses)
           .insert(result.toJson())
           .select()
@@ -140,7 +163,7 @@ class SupabaseDataService {
       final userId = SupabaseConfig.currentUser?.id;
       if (userId == null) return null;
 
-      final response = await _supabase
+      final response = await _client
           .from(Tables.analyses)
           .select()
           .eq('user_id', userId)
@@ -161,7 +184,7 @@ class SupabaseDataService {
       final userId = SupabaseConfig.currentUser?.id;
       if (userId == null) return [];
 
-      final response = await _supabase
+      final response = await _client
           .from(Tables.analyses)
           .select()
           .eq('user_id', userId)
@@ -180,7 +203,7 @@ class SupabaseDataService {
   // 특정 분석 결과 가져오기 (화면 9 → 16)
   Future<AnalysisResult?> getAnalysisById(String analysisId) async {
     try {
-      final response = await _supabase
+      final response = await _client
           .from(Tables.analyses)
           .select()
           .eq('id', analysisId)
@@ -202,7 +225,7 @@ class SupabaseDataService {
       final userId = SupabaseConfig.currentUser?.id;
       if (userId == null) return;
 
-      await _supabase.from(Tables.userActivities).insert({
+      await _client.from(Tables.userActivities).insert({
         'user_id': userId,
         'activity_type': activityType,
         'activity_data': data,
@@ -221,7 +244,7 @@ class SupabaseDataService {
       final userId = SupabaseConfig.currentUser?.id;
       if (userId == null) return null;
 
-      final response = await _supabase
+      final response = await _client
           .from(Views.userDashboardSummary)
           .select()
           .eq('user_id', userId)
@@ -242,11 +265,11 @@ class SupabaseDataService {
       final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final storagePath = '$userId/$fileName';
 
-      await _supabase.storage
+      await _client.storage
           .from(StorageBuckets.profileImages)
           .upload(storagePath, File(filePath));
 
-      final publicUrl = _supabase.storage
+      final publicUrl = _client.storage
           .from(StorageBuckets.profileImages)
           .getPublicUrl(storagePath);
 
@@ -264,11 +287,11 @@ class SupabaseDataService {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final storagePath = '$userId/$fileName';
 
-      await _supabase.storage
+      await _client.storage
           .from(StorageBuckets.userUploads)
           .upload(storagePath, File(filePath));
 
-      final publicUrl = _supabase.storage
+      final publicUrl = _client.storage
           .from(StorageBuckets.userUploads)
           .getPublicUrl(storagePath);
 
