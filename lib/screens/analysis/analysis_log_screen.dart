@@ -55,14 +55,14 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        bottom: false, // 하단 네비게이션 바가 SafeArea를 무시하도록 설정
-        child: Column( // ⭐ Stack 대신 Column으로 전체 구조 변경
+        bottom: false,
+        child: Column(
           children: [
-            Expanded( // ⭐ 스크롤 가능한 영역을 Expanded로 감싸서 남은 공간을 모두 차지하게 함
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20), // 1. 상단 여백 축소
+                  const SizedBox(height: 10),
 
                   // Back 버튼
                   Padding(
@@ -86,19 +86,25 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
                       '나의 분석 로그🌷',
                       style: TextStyle(
                         fontFamily: 'NanumSquareNeo',
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
                         fontSize: 32,
                         color: Colors.black,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 24), // 1. 여백 축소
+                  const SizedBox(height: 24),
 
                   // 스크롤 가능한 로그 리스트
                   Expanded(
                     child: _isLoading
-                        ? const Center(child: CircularProgressIndicator())
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFE8B7D4),
+                              ),
+                            ),
+                          )
                         : _logs.isEmpty
                             ? const Center(
                                 child: Text(
@@ -111,7 +117,7 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
                                 ),
                               )
                             : ListView.separated(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.fromLTRB(10, 0, 10, 120),
                                 itemCount: _logs.length,
                                 separatorBuilder: (context, index) {
                                   return Column(
@@ -136,7 +142,7 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
               ),
             ),
             
-            // 2. 하단 네비게이션 바 (화면 맨 아래에 고정)
+            // 하단 네비게이션 바
             _buildBottomNavigationBar(),
           ],
         ),
@@ -201,21 +207,12 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // 해시태그
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          if (log.personalColor != null)
-                            _buildHashTag(
-                              PersonalColorType.toHashtag(log.personalColor!),
-                            ),
-                          if (log.detectedSkinType != null)
-                            _buildHashTag(
-                              SkinType.toHashtag(log.detectedSkinType!),
-                            ),
-                        ],
-                      ),
+                      
+                      // ✅ 민감성 레벨만 표시 (퍼스널 컬러, 피부 타입 제거)
+                      if (log.sensitivityLevel != null)
+                        _buildHashTag(
+                          _getSensitivityLabel(log.sensitivityLevel!),
+                        ),
                     ],
                   ),
                 ),
@@ -225,6 +222,20 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
         ],
       ),
     );
+  }
+
+  // ✅ 민감성 레벨 라벨 생성
+  String _getSensitivityLabel(String level) {
+    switch (level.toLowerCase()) {
+      case 'low':
+        return '#양호';
+      case 'medium':
+        return '#보통';
+      case 'high':
+        return '#주의';
+      default:
+        return '#보통';
+    }
   }
 
   Widget _buildHashTag(String text) {
@@ -246,7 +257,7 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
     );
   }
 
-  // 하단 네비게이션 바 위젯 (홈 화면과 동일한 구조)
+  // 하단 네비게이션 바
   Widget _buildBottomNavigationBar() {
     return Stack(
       alignment: Alignment.center,
@@ -277,7 +288,6 @@ class _AnalysisLogScreenState extends State<AnalysisLogScreen> {
     );
   }
 
-  // 하단 네비게이션 버튼 빌더
   Widget _buildNavButton(String imagePath, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,

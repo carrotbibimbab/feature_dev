@@ -45,7 +45,7 @@ class AnalysisStartScreen extends StatelessWidget {
                     'Take a photo',
                     style: TextStyle(
                       fontFamily: 'NanumSquareNeo',
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w900,
                       fontSize: 24,
                       color: Colors.white,
                     ),
@@ -83,7 +83,7 @@ class AnalysisStartScreen extends StatelessWidget {
                     'Choose from Gallery',
                     style: TextStyle(
                       fontFamily: 'NanumSquareNeo',
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w900,
                       fontSize: 24,
                       color: Colors.white,
                     ),
@@ -132,25 +132,30 @@ class AnalysisStartScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Text(
-                        'AI 퍼스널 컬러\n및 피부 분석',
-                        style: TextStyle(
-                          fontFamily: 'NanumSquareNeo',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 48,
-                          height: 50 / 48,
-                          letterSpacing: 0.11,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              offset: const Offset(0, 4),
-                              blurRadius: 4,
-                              color: Colors.black.withOpacity(0.15),
-                            ),
-                          ],
+
+                      // ✅ 왼쪽 여백 추가
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),  // ✅ 8px 여백 추가
+                        child: Text(
+                          'AI 피부 분석\n시작하기',
+                          style: TextStyle(
+                            fontFamily: 'NanumSquareNeo',
+                           fontWeight: FontWeight.w900,
+                           fontSize: 44,
+                           height: 1.3,
+                           letterSpacing: 0.11,
+                            color: Colors.white,
+                            shadows: [
+                             Shadow(
+                               offset: const Offset(0, 4),
+                                blurRadius: 4,
+                                color: Colors.black.withOpacity(0.15),
+                              ),
+                           ],
+                          ),
                         ),
                       ),
-                    ],
+                   ],
                   ),
                 ),
 

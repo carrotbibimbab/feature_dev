@@ -1,4 +1,4 @@
-// lib/screens/profile/profile_edit_screen.dart
+// lib/screens/mypage/profile_edit_screen.dart
 import 'package:flutter/material.dart';
 import 'package:bf_app/models/user_profile.dart';
 import 'package:bf_app/services/supabase_data_service.dart';
@@ -19,7 +19,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   
   DateTime? _selectedDate;
   String? _selectedSkinType;
-  bool _isLoading = true; // ✅ 로딩 상태
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -41,7 +41,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (profile != null && mounted) {
         setState(() {
           _nameController.text = profile.name;
-          // ✅ birthYear가 null이 아닐 때만 설정
           if (profile.birthYear != null) {
             _selectedDate = DateTime(profile.birthYear!);
           }
@@ -49,7 +48,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           _isLoading = false;
         });
       } else {
-        // 프로필을 불러올 수 없는 경우
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -58,7 +56,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         }
       }
     } catch (e) {
-      // 에러 발생 시
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -122,14 +119,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (success) {
       if (mounted) {
         _showSuccess('프로필이 수정되었습니다.');
-        // ✅ 안전한 뒤로가기
         await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          } else {
-            context.go('/home');
-          }
+          context.go('/mypage');
         }
       }
     } else {
@@ -160,10 +152,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Widget build(BuildContext context) {
     // ✅ 로딩 중일 때 로딩 화면 표시
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color(0xFFE8B7D4),
+            ),
+          ),
         ),
       );
     }
@@ -171,208 +167,215 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
 
-              // ✅ 뒤로가기 버튼 (이미지 사용)
-              GestureDetector(
-                onTap: () {
-                  // ✅ pop 대신 go로 안전하게 이동
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    context.go('/home'); // pop 불가능하면 홈으로
-                  }
-                },
+            // ✅ Back 버튼
+            Padding(
+              padding: const EdgeInsets.only(left: 23),
+              child: GestureDetector(
+                onTap: () => context.go('/mypage'),
                 child: Image.asset(
-                  'assets/5and11/Back.png',
-                  width: 24,
-                  height: 24,
+                  'assets/8/Back.png',
+                  width: 59,
+                  height: 40,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // ✅ 제목 (문구 변경)
-              const Text(
-                '회원님의 정보를\n수정해주세요 🍥',
-                style: TextStyle(
-                  fontFamily: 'NanumSquareNeo',
-                  fontWeight: FontWeight.w900,
-                  fontSize: 32,
-                  height: 50 / 32,
-                  color: Color(0xFF000000),
-                ),
-              ),
-
-              const SizedBox(height: 50),
-
-              // 1. 이름 (수평 배치)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 80,
-                    child: Text(
-                      '이름',
+            // ✅ 스크롤 가능한 콘텐츠
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 35),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 제목
+                    const Text(
+                      '회원님의 정보를\n수정해주세요 🍥',
                       style: TextStyle(
                         fontFamily: 'NanumSquareNeo',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                        color: Color(0xFF434343),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 32,
+                        height: 1.3,
+                        color: Color(0xFF000000),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: '이름을 입력하세요',
-                        filled: true,
-                        fillColor: const Color(0xFFF5F5F5),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 25),
+                    const SizedBox(height: 50),
 
-              // 2. 생년월일
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 80,
-                    child: Text(
-                      '생년월일',
-                      style: TextStyle(
-                        fontFamily: 'NanumSquareNeo',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                        color: Color(0xFF434343),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF5F5F5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          _selectedDate == null
-                              ? '날짜를 선택하세요'
-                              : DateFormat('yyyy / MM / dd').format(_selectedDate!),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _selectedDate == null
-                                ? Colors.grey[600]
-                                : Colors.black,
+                    // 1. 이름
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 80,
+                          child: Text(
+                            '이름',
+                            style: TextStyle(
+                              fontFamily: 'NanumSquareNeo',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              color: Color(0xFF434343),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 25),
-
-              // 3. 피부타입
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 80,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 12),
-                      child: Text(
-                        '피부타입',
-                        style: TextStyle(
-                          fontFamily: 'NanumSquareNeo',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          color: Color(0xFF434343),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        // 첫 번째 줄: 건성, 중성, 지성
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            _buildSkinTypeButton(
-                              type: SkinTypeConstants.dry,
-                              width: 62,
-                              height: 50,
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: TextField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              hintText: '이름을 입력하세요',
+                              filled: true,
+                              fillColor: const Color(0xFFF5F5F5),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                             ),
-                            const SizedBox(width: 10),
-                            _buildSkinTypeButton(
-                              type: SkinTypeConstants.normal,
-                              width: 62,
-                              height: 50,
-                            ),
-                            const SizedBox(width: 10),
-                            _buildSkinTypeButton(
-                              type: SkinTypeConstants.oily,
-                              width: 62,
-                              height: 50,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        // 두 번째 줄: 복합성, 민감성
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            _buildSkinTypeButton(
-                              type: SkinTypeConstants.combination,
-                              width: 77,
-                              height: 50,
-                            ),
-                            const SizedBox(width: 10),
-                            _buildSkinTypeButton(
-                              type: SkinTypeConstants.sensitive,
-                              width: 77,
-                              height: 50,
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 25),
+
+                    // 2. 생년월일
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 80,
+                          child: Text(
+                            '생년월일',
+                            style: TextStyle(
+                              fontFamily: 'NanumSquareNeo',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              color: Color(0xFF434343),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                _selectedDate == null
+                                    ? '날짜를 선택하세요'
+                                    : DateFormat('yyyy / MM / dd').format(_selectedDate!),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: _selectedDate == null
+                                      ? Colors.grey[600]
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    // 3. 피부타입
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 80,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: Text(
+                              '피부타입',
+                              style: TextStyle(
+                                fontFamily: 'NanumSquareNeo',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 18,
+                                color: Color(0xFF434343),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // 첫 번째 줄: 건성, 중성, 지성
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  _buildSkinTypeButton(
+                                    type: SkinTypeConstants.dry,
+                                    width: 62,
+                                    height: 50,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildSkinTypeButton(
+                                    type: SkinTypeConstants.normal,
+                                    width: 62,
+                                    height: 50,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildSkinTypeButton(
+                                    type: SkinTypeConstants.oily,
+                                    width: 62,
+                                    height: 50,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              // 두 번째 줄: 복합성, 민감성
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  _buildSkinTypeButton(
+                                    type: SkinTypeConstants.combination,
+                                    width: 77,
+                                    height: 50,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildSkinTypeButton(
+                                    type: SkinTypeConstants.sensitive,
+                                    width: 77,
+                                    height: 50,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 100), // ✅ 하단 버튼 공간 확보
+                  ],
+                ),
               ),
+            ),
 
-              const Spacer(),
-
-              // Save 버튼
-              Center(
+            // ✅ 하단 Save 버튼 (고정)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(35, 0, 35, 40),
+              child: Center(
                 child: GestureDetector(
                   onTap: _handleSave,
                   child: Image.asset(
@@ -382,10 +385,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                 ),
               ),
-
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

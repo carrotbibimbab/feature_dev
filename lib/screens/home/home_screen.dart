@@ -70,12 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // 환영 메시지
                 Padding(
-                  padding: const EdgeInsets.only(left: 11.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       style: const TextStyle(
                         fontFamily: 'NanumSquareNeo',
-                        fontSize: 22,
+                        fontSize: 18,
                         height: 1.4,
                         color: Color(0xFF000000),
                       ),
@@ -104,16 +104,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
 
                 // AI 분석 버튼
-                GestureDetector(
-                  onTap: () => context.go('/analysis-start'),
-                  child: Image.asset(
-                    'assets/7/button_analyzation.png',
-                    width: double.infinity,
-                    fit: BoxFit.fitWidth,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),  // ✅ 양옆 8px만
+                  child: GestureDetector(
+                    onTap: () => context.go('/analysis-start'),
+                    child: Image.asset(
+                      'assets/7/mainCTA.png',
+                      width: double.infinity,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 16), // 3. 여백 축소
+                const SizedBox(height: 24), // 3. 여백 축소
 
                 // 솔루션 안내 문구
                 Center(
@@ -132,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         TextSpan(
                           text: '뷰파가 제안하는 솔루션🌸',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                             color: Color(0xFFE8B7D4),
                           ),
                         ),
@@ -141,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12), // 3. 여백 축소
+                const SizedBox(height: 24), // 3. 여백 축소
 
                 // 가로 스크롤 카드
                 SizedBox(

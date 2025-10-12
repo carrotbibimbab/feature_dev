@@ -80,7 +80,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      // ... 에러 처리 ...
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('링크를 열 수 없습니다.')),
+        );
+      }
     }
   }
 
@@ -93,9 +97,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
           // 메인 콘텐츠 (스크롤 가능)
           SafeArea(
             bottom: false,
-            child: ListView( // SingleChildScrollView + Column 대신 ListView 사용
+            child: ListView(
               children: [
-                const SizedBox(height: 20), // 1. 상단 여백 축소
+                const SizedBox(height: 10),
 
                 // Back 버튼
                 Align(
@@ -113,7 +117,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 15), // 1. 여백 축소
+                const SizedBox(height: 20),
 
                 // 프로필 카드
                 Padding(
@@ -130,7 +134,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       // 카드 내용
                       Positioned(
                         left: 20,
-                        top: 20,
+                        top: 30,
                         right: 20,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,13 +187,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                       ),
                                     ),
                                   const SizedBox(height: 16),
-                                  if (_latestAnalysis != null)
-                                    Wrap(
-                                      spacing: 8,
-                                      children: [
-                                        _buildHashTag(PersonalColorType.toHashtag(_latestAnalysis!.personalColor ?? '')),
-                                        _buildHashTag(SkinType.toHashtag(_latestAnalysis!.detectedSkinType ?? '')),
-                                      ],
+                                  
+                                  // ✅ 민감성 레벨만 표시 (퍼스널 컬러, 피부 타입 제거)
+                                  if (_latestAnalysis?.sensitivityLevel != null)
+                                    _buildHashTag(
+                                      _getSensitivityLabel(_latestAnalysis!.sensitivityLevel!),
                                     ),
                                 ],
                               ),
@@ -201,7 +203,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40), // 1. 여백 축소
+                const SizedBox(height: 40),
 
                 // 로그아웃 버튼
                 Padding(
@@ -216,7 +218,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40), // 1. 여백 축소
+                const SizedBox(height: 40),
 
                 // 개인정보 수정 버튼
                 Padding(
@@ -235,7 +237,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
             ),
           ),
 
-          // 2. 하단 네비게이션 바 (홈 화면과 동일한 레이아웃)
+          // 하단 네비게이션 바
           Positioned(
             left: 0,
             right: 0,
@@ -273,6 +275,20 @@ class _MyPageScreenState extends State<MyPageScreen> {
         ],
       ),
     );
+  }
+
+  // ✅ 민감성 레벨 라벨 생성
+  String _getSensitivityLabel(String level) {
+    switch (level.toLowerCase()) {
+      case 'low':
+        return '#양호';
+      case 'medium':
+        return '#보통';
+      case 'high':
+        return '#주의';
+      default:
+        return '#보통';
+    }
   }
 
   Widget _buildHashTag(String text) {

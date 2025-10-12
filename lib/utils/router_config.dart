@@ -12,6 +12,7 @@ import 'package:bf_app/screens/mypage/profile_edit_screen.dart';
 import 'package:bf_app/screens/analysis/analysis_start_screen.dart';
 import 'package:bf_app/screens/analysis/analyzing_screen.dart';
 import 'package:bf_app/screens/analysis/analysis_result_screen.dart';
+import 'package:bf_app/screens/analysis/latest_analysis_screen.dart';  // ✅ 추가
 import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/screens/analysis/analysis_log_screen.dart';
 import 'package:bf_app/screens/intro/intro_screen.dart';
@@ -175,6 +176,15 @@ class AppRouter {
             state: state,
           );
         },
+      ),
+
+      // ✅ Latest Analysis (최근 분석 결과) - 새로 추가
+      GoRoute(
+        path: '/latest-analysis',
+        pageBuilder: (context, state) => _buildFadeTransitionPage(
+          child: const LatestAnalysisScreen(),
+          state: state,
+        ),
       ),
 
       // Analysis Log

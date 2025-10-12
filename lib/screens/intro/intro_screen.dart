@@ -57,7 +57,7 @@ class _IntroScreenState extends State<IntroScreen>
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 23, top: 20),
+                padding: const EdgeInsets.only(left: 23, top: 10),
                 child: GestureDetector(
                   onTap: () => context.go('/home'),
                   child: Image.asset(
@@ -106,7 +106,7 @@ class _IntroScreenState extends State<IntroScreen>
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'NanumSquareNeo',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         fontSize: 16,
                         color: Color(0xFFC6091D),
                       ),
@@ -142,7 +142,7 @@ class _IntroScreenState extends State<IntroScreen>
 
                   // Bottom description text
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: const TextSpan(
