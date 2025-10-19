@@ -18,22 +18,7 @@ class ApiService {
   void setAuthToken(String token) {
     _dio.options.headers['Authorization'] = 'Bearer $token';
     print('🔐 API 토큰 설정 완료');
-  }
-
-  /// Supabase에서 자동으로 토큰 가져와서 설정
-  Future<void> _ensureAuth() async {
-    // 🔥 개발 모드: Mock 토큰 사용
-    if (AppConfig.isDevelopmentMode) {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    
-    if (token != null) {
-      setAuthToken(token);
-      print('🔧 개발 모드: Mock 토큰 사용');
-      return;
-      } else {
-      // Mock 토큰이 없으면 에러
-      throw Exception('개발 모드: 로그인이 필요합니다 (개발자 모드로 먼저 로그인하세요)');
+  
     }
     }
     final user = SupabaseConfig.client.auth.currentUser;

@@ -39,10 +39,6 @@ class SupabaseConfig {
     if (supabaseUser != null) {
       return supabaseUser.id;
     }
-
-    // 2. SharedPreferences에서 개발자 모드 사용자 확인
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_sub');
   }
 }
 

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bf_app/services/supabase_service.dart';
 
 class AuthHelper {
-  /// 현재 로그인한 사용자 ID 가져오기 (Supabase 또는 개발자 모드)
+  /// 현재 로그인한 사용자 ID 가져오기 (Supabase )
   static Future<String?> getCurrentUserId() async {
     // 1. Supabase 사용자 확인
     final supabaseUser = SupabaseConfig.currentUser;
@@ -11,9 +11,6 @@ class AuthHelper {
       return supabaseUser.id;
     }
     
-    // 2. SharedPreferences에서 개발자 모드 사용자 확인
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_sub');
   }
   
   /// 현재 사용자 이름 가져오기

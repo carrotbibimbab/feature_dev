@@ -123,65 +123,6 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, max_age=60*60*24*7)
 templates = Jinja2Templates(directory="templates")
 
 
-
-# ────────────────────────────────────────────────────────────
-# Google OAuth
-# ────────────────────────────────────────────────────────────
-from authlib.integrations.starlette_client import OAuth
-
-oauth = OAuth()
-oauth.register(
-    name="google",
-    client_id=GOOGLE_CLIENT_ID or "",
-    client_secret=GOOGLE_CLIENT_SECRET or "",
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile", "prompt": "select_account"},
-)
-
-state_signer = URLSafeSerializer(SECRET_KEY, salt="oauth-state")
-
-# ────────────────────────────────────────────────────────────
-# JWT
-# ────────────────────────────────────────────────────────────
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
-
-def create_access_token(subject: dict, expires_minutes: int | None = None) -> str:
-    """우리 서버용 액세스 토큰 발급"""
-    exp = datetime.utcnow() + timedelta(minutes=expires_minutes or ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": exp, **subject}
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-def decode_token(token: str) -> dict:
-    """우리 서버용 액세스 토큰 검증"""
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-
-_bearer = HTTPBearer(auto_error=False)
-
-def get_current_user(request: Request, creds: HTTPAuthorizationCredentials = Depends(_bearer)) -> dict:
-    """
-    보호 라우트에서 호출되는 공용 의존성
-    1) Authorization: Bearer <JWT> 있으면 → JWT 검증
-    2) 없으면 세션 로그인 사용자 허용
-    """
-    if creds and creds.scheme.lower() == "bearer":
-        try:
-            payload = decode_token(creds.credentials)
-            return {
-                "sub": payload.get("sub"),
-                "email": payload.get("email"),
-                "name": payload.get("name"),
-                "picture": payload.get("picture"),
-            }
-        except Exception:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-    user = request.session.get("user")
-    if user:
-        return user
-
-    raise HTTPException(status_code=401, detail="Not authenticated")
-
 # ────────────────────────────────────────────────────────────
 # 서버 시작 이벤트
 # ────────────────────────────────────────────────────────────
@@ -258,17 +199,9 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 # 기본 페이지
 # ────────────────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    """홈페이지"""
-    user = request.session.get("user")
-    return templates.TemplateResponse("login.html", {"request": request, "user": user})
+def root():
+    return {"message": "BF API Server", "status": "running"}
 
-@app.get("/login")
-async def login(request: Request):
-    """Google 로그인 시작"""
-    redirect_uri = f"{BASE_URL.rstrip('/')}/auth/google/callback"
-    state = state_signer.dumps({"next": request.query_params.get("next", "/profile")})
-    return await oauth.google.authorize_redirect(request, redirect_uri, state=state)
 
 
 @app.get("/me")
