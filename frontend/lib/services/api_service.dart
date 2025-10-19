@@ -20,7 +20,7 @@ class ApiService {
     print('🔐 API 토큰 설정 완료');
   
     }
-    }
+    
     final user = SupabaseConfig.client.auth.currentUser;
     if (user == null) {
       throw Exception('로그인이 필요합니다');
@@ -35,7 +35,7 @@ class ApiService {
       throw Exception('세션이 만료되었습니다');
     }
     
-  }
+  
 
   /// 종합 AI 분석 요청 (화면 14 → 화면 16)
   Future<AnalysisResult> analyzeImageComprehensive(

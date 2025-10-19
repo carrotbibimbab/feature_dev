@@ -4,7 +4,7 @@
 class AppConfig {
   // 백엔드 URL
   static const String backendUrl = 'https://beautyfinder-l2pt.onrender.com';
-  
+}
 
 class ApiConfig {
   static const baseUrl = 'https://beautyfinder-l2pt.onrender.com';

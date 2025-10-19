@@ -17,26 +17,13 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  // 🔥 개발 모드 지원
-  bool get isAuthenticated {
-    if (AppConfig.isDevelopmentMode) {
-      // 개발 모드: SharedPreferences 체크
-      return _checkDevAuthentication();
-    }
-    return _currentUser != null;
-  }
-
   AuthProvider() {
     _init();
   }
 
   /// 초기화: 현재 사용자 확인 및 Auth 상태 리스너 등록
   void _init() {
-    if (AppConfig.isDevelopmentMode) {
-      print('🔧 AuthProvider: 개발 모드로 초기화');
-      _checkDevAuthentication();
-      } else {
-      _currentUser = _authService.getCurrentUser();
+    _currentUser = _authService.getCurrentUser();
     
     // Auth 상태 변화 감지
     _authService.authStateChanges.listen((AuthState authState) {
@@ -44,13 +31,8 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       });
     }
-  }
-  // 개발 모드 인증 상태 확인
-  bool _checkDevAuthentication() {
-    // 동기 방식으로는 SharedPreferences를 읽을 수 없으므로
-    // 간단히 true 반환 (api_service에서 실제 체크)
-    return true;
-  }
+  
+
 
 
   /// Google 로그인 (Supabase Auth 사용)
@@ -87,14 +69,9 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-       // 🔥 개발 모드
-      if (AppConfig.isDevelopmentMode) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.clear();
-        print('🔧 개발 모드 로그아웃 완료');
-      } else {
+      
       await _authService.signOut();
-      }
+      
       _currentUser = null;
       _errorMessage = null;
     } catch (e) {
@@ -113,10 +90,7 @@ class AuthProvider with ChangeNotifier {
 
   /// Access Token 가져오기 (API 호출 시 사용)
   String? getAccessToken() {
-    // 개발 모드
-    if (AppConfig.isDevelopmentMode) {
-      return AppConfig.mockJwtToken;
-    }
+    
     final session = SupabaseConfig.client.auth.currentSession;
     return session?.accessToken;
   }
