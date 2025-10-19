@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 import uuid
 
-from fastapi import FastAPI, Request, HTTPException, Depends, UploadFile, File, Form
+from fastapi import FastAPI, Request, HTTPException, Depends, UploadFile, File, Form, Header
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
@@ -14,7 +14,51 @@ from dotenv import load_dotenv
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
+from supabase import create_client, Client
+
 from app.services.response_formatter import ResponseFormatter
+
+# ────────────────────────────────────────────────────────────
+# Supabase
+# ────────────────────────────────────────────────────────────
+supabase = None
+try:
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+    if SUPABASE_URL and SUPABASE_KEY:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception:
+    supabase = None
+
+# JWT 검증 함수
+async def get_current_user_from_supabase(authorization: Optional[str] = Header(None)):
+    """
+    Supabase JWT 토큰 검증
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    
+    try:
+        # "Bearer " 제거
+        token = authorization.replace("Bearer ", "")
+        
+        # Supabase JWT 검증
+        user = supabase.auth.get_user(token)
+        
+        if not user or not user.user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # 사용자 정보 반환
+        return {
+            "id": user.user.id,
+            "email": user.user.email,
+            "user_metadata": user.user.user_metadata,
+        }
+    
+    except Exception as e:
+        print(f"❌ JWT verification error: {str(e)}")
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
+
 
 # ────────────────────────────────────────────────────────────
 # AI 서비스 Import
@@ -78,18 +122,7 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, max_age=60*60*24*7)
 
 templates = Jinja2Templates(directory="templates")
 
-# ────────────────────────────────────────────────────────────
-# Supabase
-# ────────────────────────────────────────────────────────────
-supabase = None
-try:
-    from supabase import create_client, Client
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
-    if SUPABASE_URL and SUPABASE_KEY:
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-except Exception:
-    supabase = None
+
 
 # ────────────────────────────────────────────────────────────
 # Google OAuth
@@ -237,105 +270,37 @@ async def login(request: Request):
     state = state_signer.dumps({"next": request.query_params.get("next", "/profile")})
     return await oauth.google.authorize_redirect(request, redirect_uri, state=state)
 
-@app.get("/auth/google/callback")
-async def auth_callback(request: Request):
-    try:
-        # 1. OAuth 토큰 받기
-        token = await oauth.google.authorize_access_token(request)
-        userinfo = token.get("userinfo")
-        
-        if not userinfo:
-            raise HTTPException(status_code=400, detail="Failed to get user info")
-        
-        # 2. 세션에 사용자 정보 저장 (웹용)
-        request.session["user"] = {
-            "sub": userinfo.get("sub"),
-            "email": userinfo.get("email"),
-            "name": userinfo.get("name"),
-            "picture": userinfo.get("picture"),
-        }
-        
-        # 3. JWT 토큰 발급 (앱용)
-        jwt_token = create_access_token({
-            "sub": userinfo.get("sub"),
-            "email": userinfo.get("email"),
-            "name": userinfo.get("name"),
-            "picture": userinfo.get("picture"),
-        })
-        
-        # 4. User-Agent에 따라 리디렉트 분기
-        user_agent = request.headers.get("user-agent", "").lower()
-        
-        if "flutter" in user_agent or request.query_params.get("platform") == "mobile":
-            # Flutter 앱으로 리디렉트
-            flutter_callback = f"myapp://login-callback?token={jwt_token}"
-            return RedirectResponse(url=flutter_callback)
-        else:
-            # 웹 브라우저로 리디렉트
-            state = request.query_params.get("state")
-            next_url = "/profile"
-            if state:
-                try:
-                    state_data = state_signer.loads(state)
-                    next_url = state_data.get("next", "/profile")
-                except:
-                    pass
-            return RedirectResponse(url=next_url)
-    
-    except Exception as e:
-        print(f"❌ OAuth callback error: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"OAuth 인증 실패: {str(e)}")
-
-@app.get("/profile", response_class=HTMLResponse)
-def profile_page(request: Request):
-    """프로필 페이지"""
-    user = request.session.get("user")
-    if not user:
-        return RedirectResponse(url="/")
-    return templates.TemplateResponse("profile.html", {"request": request, "user": user})
 
 @app.get("/me")
-def me_api(request: Request):
-    """현재 로그인 사용자 정보 (세션 기반)"""
-    user = request.session.get("user")
-    if not user:
-        return JSONResponse({"authenticated": False}, status_code=401)
-    return {"authenticated": True, "user": user}
-
-@app.get("/logout")
-def logout(request: Request):
-    """로그아웃"""
-    request.session.clear()
-    return RedirectResponse(url="/")
-
-# ────────────────────────────────────────────────────────────
-# JWT 발급/검증
-# ────────────────────────────────────────────────────────────
-@app.post("/auth/google/jwt")
-def issue_our_jwt(request: Request):
+async def get_current_user_info(user: dict = Depends(get_current_user_from_supabase)):
     """
-    세션 기반으로 우리 JWT 발급
-    (앱 클라이언트에서 사용)
+    현재 로그인한 사용자 정보 반환 (Supabase JWT 기반)
     """
-    user = request.session.get("user")
-    if not user:
-        raise HTTPException(status_code=401, detail="Login required (session)")
+    return {
+        "authenticated": True,
+        "user": user
+    }
 
-    token = create_access_token(
-        {
-            "sub": user.get("sub"),
-            "email": user.get("email"),
-            "name": user.get("name"),
-            "picture": user.get("picture"),
-            "provider": "google",
-        }
-    )
-    return {"access_token": token, "token_type": "bearer"}
 
-@app.get("/me-jwt")
-def me_jwt(user: dict = Depends(get_current_user)):
-    """현재 로그인 사용자 정보 (JWT 기반)"""
-    return {"authenticated": True, "user": user}
+@app.get("/profile")
+async def get_profile(user: dict = Depends(get_current_user_from_supabase)):
+    """
+    사용자 프로필 조회
+    """
+    user_id = user["id"]
+    
+    # Supabase에서 프로필 데이터 조회
+    response = supabase.table("profiles").select("*").eq("id", user_id).execute()
+    
+    if not response.data:
+        return {"user": user, "profile": None}
+    
+    return {
+        "user": user,
+        "profile": response.data[0]
+    }
+
+
 
 # ────────────────────────────────────────────────────────────
 # 헬스체크

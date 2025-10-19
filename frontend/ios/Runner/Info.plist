@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,6 +26,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>카메라를 사용하여 피부 분석을 진행합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>갤러리에서 사진을 선택하여 피부 분석을 진행합니다.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,13 +49,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>카메라를 사용하여 피부 분석을 진행합니다.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>갤러리에서 사진을 선택하여 피부 분석을 진행합니다.</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!-- iOS 클라이언트 ID를 역순으로 -->
+                <string>com.googleusercontent.app.793752156383-gbp8rrmoci1pue17gdisamiu2k9c27k1</string>
+            </array>
+        </dict>
+    </array>
+
+    <key>GIDClientID</key>
+    <string>793752156383-gbp8rrmoci1pue17gdisamiu2k9c27k1.apps.googleusercontent.com</string>
 </dict>
 </plist>

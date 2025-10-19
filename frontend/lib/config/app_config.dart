@@ -17,14 +17,14 @@ class AppConfig {
   static const String mockJwtToken = 'dev-mock-token-12345';
   
   // 백엔드 URL
-  static const String backendUrl = 'https://backend-6xc5.onrender.com';
+  static const String backendUrl = 'https://beautyfinder-l2pt.onrender.com';
   
   // 개발 모드 표시 여부
   static bool get showDevBadge => isDevelopmentMode;
 }
 
 class ApiConfig {
-  static const baseUrl = 'https://backend-6xc5.onrender.com';
+  static const baseUrl = 'https://beautyfinder-l2pt.onrender.com';
   
   // 인증
   static const loginUrl = '$baseUrl/login';

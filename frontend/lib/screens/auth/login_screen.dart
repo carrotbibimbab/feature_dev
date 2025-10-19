@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen>
         context,
         MaterialPageRoute(
           builder: (context) => const BackendLoginWebView(
-            loginUrl: 'https://backend-6xc5.onrender.com/login',
+            loginUrl: 'https://beautyfinder-l2pt.onrender.com/login',
           ),
         ),
       );
@@ -448,7 +448,7 @@ class _BackendLoginWebViewState extends State<BackendLoginWebView> {
       final result = await _controller.runJavaScriptReturningResult('''
         (async function() {
           try {
-            const response = await fetch('https://backend-6xc5.onrender.com/auth/google/jwt', {
+            const response = await fetch('https://beautyfinder-l2pt.onrender.com/auth/google/jwt', {
               method: 'POST',
               credentials: 'include'
             });

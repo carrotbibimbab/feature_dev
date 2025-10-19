@@ -9,7 +9,7 @@ import 'package:bf_app/config/app_config.dart';  // 추가
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://backend-6xc5.onrender.com',
+    baseUrl: 'https://beautyfinder-l2pt.onrender.com',
     connectTimeout: const Duration(seconds: 120), // AI 분석 시간 고려
     receiveTimeout: const Duration(seconds: 120),
   ));
