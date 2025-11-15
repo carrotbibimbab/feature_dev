@@ -16,6 +16,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from supabase import create_client, Client
 
+
 from app.services.response_formatter import ResponseFormatter
 
 # ────────────────────────────────────────────────────────────
@@ -300,7 +301,7 @@ def get_product(product_id: str):
 async def ai_comprehensive_analysis(
     file: UploadFile = File(..., description="얼굴 이미지 (JPG, PNG)"),
     concerns: Optional[str] = Form(None, description="피부 고민 (선택)"),
-    user: dict = Depends(get_current_user_info)
+    user: dict = Depends(get_current_user_from_supabase)
 ):
     """
     HF Space AI 서비스를 사용한 종합 피부 분석
@@ -330,7 +331,7 @@ async def ai_comprehensive_analysis(
             detail="이미지 파일만 업로드 가능합니다 (JPG, PNG)"
         )
     
-    user_id = user.get("sub")
+    user_id = user.get("id")
     
     try:
         # 1. 이미지 업로드

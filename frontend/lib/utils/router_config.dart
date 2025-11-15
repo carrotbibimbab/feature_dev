@@ -16,11 +16,24 @@ import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/screens/analysis/analysis_log_screen.dart';
 import 'package:bf_app/screens/intro/intro_screen.dart';
 import 'package:bf_app/screens/analysis/face_detection_failed_screen.dart';
+import 'package:bf_app/services/supabase_service.dart';
 
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final supabase = SupabaseConfig.client;
+      final user = supabase.auth.currentUser;
+      final isLoginPage = state.matchedLocation == '/login';
+
+      if (user == null && !isLoginPage) {
+        return '/login';
+      } else if (user != null && isLoginPage) {
+        return '/home';
+      }
+    },
+
     routes: [
       // Splash Screen
       GoRoute(
@@ -89,7 +102,7 @@ class AppRouter {
           // ✅ nullable String으로 캐스팅
           final imagePath = state.extra as String?;
           
-          // null 체크가 이제 제대로 작동합니다
+          // null 체크
           if (imagePath == null) {
             // 에러 발생 시 이전 화면으로 돌아가기
             WidgetsBinding.instance.addPostFrameCallback((_) {

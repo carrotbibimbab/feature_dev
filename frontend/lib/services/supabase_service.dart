@@ -8,20 +8,18 @@ class SupabaseConfig {
   static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   static String get supabaseAnonKey => dotenv.env['SUPABASE_KEY'] ?? '';
 
-  // Supabase 초기화
   static Future<void> initialize() async {
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
-      authOptions: const FlutterAuthClientOptions(
-        authFlowType: AuthFlowType.pkce,
-        autoRefreshToken: true,
-      ),
     );
+    
+    print('✅ Supabase 초기화 완료');
   }
 
-  // Supabase 클라이언트 가져오기
+  // ⭐ client getter만 남김
   static SupabaseClient get client => Supabase.instance.client;
+  
 
   // 현재 사용자 가져오기
   static User? get currentUser => client.auth.currentUser;

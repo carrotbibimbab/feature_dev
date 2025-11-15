@@ -10,7 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 class SupabaseDataService {
-  final _client = SupabaseConfig.client;
+  SupabaseClient get _client => SupabaseConfig.client;
 
   // ==================== 프로필 관련 ====================
 
@@ -61,7 +61,7 @@ class SupabaseDataService {
       print('   - skinType: $skinType');
 
       final data = {
-        'user_id': userId,  // 👈 TEXT 타입
+        'id': userId,  // 👈 TEXT 타입
         'name': name,
         'birth_year': birthYear,
         'skin_type': skinType,

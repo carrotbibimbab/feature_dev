@@ -1,87 +1,126 @@
 // lib/services/api_service.dart
-import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'dart:io';  
 import 'package:bf_app/models/analysis_result.dart';
 import 'package:bf_app/services/supabase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';  
 import 'package:bf_app/config/app_config.dart';  // 추가
-
+import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart'; 
 
 class ApiService {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://beautyfinder-l2pt.onrender.com',
-    connectTimeout: const Duration(seconds: 120), // AI 분석 시간 고려
-    receiveTimeout: const Duration(seconds: 120),
-  ));
+  static const String baseUrl = 'https://beautyfinder-l2pt.onrender.com';
+  SupabaseClient get _supabase => SupabaseConfig.client;
 
-  /// Authorization 토큰 설정
-  void setAuthToken(String token) {
-    _dio.options.headers['Authorization'] = 'Bearer $token';
-    print('🔐 API 토큰 설정 완료');
-  
-    }
+  // 인증 토큰 가져오기
+  Future<String?> _getAuthToken() async {
+    final session = _supabase.auth.currentSession;
+    return session?.accessToken;
+  }
+
+  // 인증 헤더 생성
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _getAuthToken();
     
-    final user = SupabaseConfig.client.auth.currentUser;
-    if (user == null) {
-      throw Exception('로그인이 필요합니다');
+    if (token == null) {
+      throw Exception('인증이 필요합니다. 다시 로그인해주세요.');
     }
 
-    // Supabase의 access token을 백엔드 API에 사용
-    final session = SupabaseConfig.client.auth.currentSession;
-    if (session != null) {
-      setAuthToken(session.accessToken);
-      print('✅ Supabase 토큰 사용');
-    } else {
-      throw Exception('세션이 만료되었습니다');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+  // ────────────────────────────────────────────────────────────
+  // 사용자 정보
+  // ────────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getCurrentUser() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/me'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('사용자 정보 가져오기 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ API 에러: $e');
+      rethrow;
     }
+  }
+
+  Future<Map<String, dynamic>> getProfile() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/profile'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('프로필 가져오기 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ API 에러: $e');
+      rethrow;
+    }
+  }
     
-  
 
-  /// 종합 AI 분석 요청 (화면 14 → 화면 16)
+  /// 분석 히스토리 조회
+    /// 종합 AI 분석 요청 (화면 14 → 화면 16)
   Future<AnalysisResult> analyzeImageComprehensive(
     File imageFile, {
-    String? concerns, // 피부 고민 (선택)
+    String? concerns,
   }) async {
     try {
-      // 인증 확인
-      await _ensureAuth();
+      final token = await _getAuthToken();
+      if (token == null) {
+        throw Exception('인증이 필요합니다.');
+      }
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/api/v1/analysis/comprehensive'),
+      );
+
+      request.headers['Authorization'] = 'Bearer $token';
 
       String fileName = imageFile.path.split('/').last;
-
-      FormData formData = FormData.fromMap({
-        "file": await MultipartFile.fromFile(
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
           imageFile.path,
           filename: fileName,
         ),
-        if (concerns != null) "concerns": concerns,
-      });
+      );
+
+      if (concerns != null) {
+        request.fields['concerns'] = concerns;
+      }
 
       print('🚀 AI 분석 요청 시작...');
-      
-      final response = await _dio.post(
-        '/api/v1/analysis/comprehensive',
-        data: formData,
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
-      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
       print('✅ 분석 완료: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        // 🎯 백엔드가 프론트엔드 형식으로 바로 반환!
-        // 변환 작업 없이 바로 파싱
-        return AnalysisResult.fromJson(response.data);
+        final data = json.decode(response.body);
+        return AnalysisResult.fromJson(data);  // ⭐ Map을 AnalysisResult로 변환
       } else {
         throw Exception('서버 오류: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      print('❌ 분석 에러: ${e.message}');
-      if (e.response != null) {
-        print('   응답 데이터: ${e.response?.data}');
-      }
+    } catch (e) {
+      print('❌ 분석 에러: $e');
       rethrow;
     }
   }
@@ -89,17 +128,17 @@ class ApiService {
   /// 분석 히스토리 조회
   Future<List<AnalysisResult>> getAnalysisHistory({int limit = 10}) async {
     try {
-      await _ensureAuth();
-
-      final response = await _dio.get(
-        '/api/v1/analysis/history',
-        queryParameters: {'limit': limit},
+      final headers = await _getHeaders();
+      
+      final uri = Uri.parse('$baseUrl/api/v1/analysis/history').replace(
+        queryParameters: {'limit': limit.toString()},
       );
 
+      final response = await http.get(uri, headers: headers);
+
       if (response.statusCode == 200) {
-        // 배열이 직접 반환됨
-        final List data = response.data as List;
-        return data.map((item) => AnalysisResult.fromJson(item)).toList();
+        final List data = json.decode(response.body) as List;
+        return data.map((item) => AnalysisResult.fromJson(item)).toList();  // ⭐ 변환
       }
 
       return [];
@@ -112,13 +151,15 @@ class ApiService {
   /// 특정 분석 결과 조회
   Future<AnalysisResult?> getAnalysisById(String analysisId) async {
     try {
-      await _ensureAuth();
-
-      final response = await _dio.get('/api/v1/analysis/$analysisId');
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/v1/analysis/$analysisId'),
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
-        
-        return AnalysisResult.fromJson(response.data);
+        final data = json.decode(response.body);
+        return AnalysisResult.fromJson(data);  // ⭐ 변환
       }
 
       return null;
@@ -131,8 +172,16 @@ class ApiService {
   /// AI 서비스 상태 확인
   Future<bool> checkAIServiceHealth() async {
     try {
-      final response = await _dio.get('/api/v1/analysis/health');
-      return response.data['status'] == 'ok' || response.data['status'] == 'healthy';
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/v1/analysis/health'),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['status'] == 'ok' || data['status'] == 'healthy';
+      }
+      
+      return false;
     } catch (e) {
       print('❌ 헬스체크 에러: $e');
       return false;

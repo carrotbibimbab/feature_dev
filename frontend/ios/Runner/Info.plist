@@ -57,7 +57,7 @@
             <key>CFBundleURLSchemes</key>
             <array>
                 <!-- iOS 클라이언트 ID를 역순으로 -->
-                <string>com.googleusercontent.app.793752156383-gbp8rrmoci1pue17gdisamiu2k9c27k1</string>
+                <string>com.googleusercontent.apps.793752156383-gbp8rrmoci1pue17gdisamiu2k9c27k1</string>
             </array>
         </dict>
     </array>
