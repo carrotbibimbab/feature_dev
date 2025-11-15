@@ -380,7 +380,7 @@ async def ai_comprehensive_analysis(
 @app.get("/api/v1/analysis/history", tags=["AI 분석"])
 async def get_analysis_history(
     limit: int = 10,
-    user: dict = Depends(get_current_user_info)
+    user: dict = Depends(get_current_user_from_supabase)
 ):
     """
     사용자의 분석 히스토리 조회
@@ -395,7 +395,7 @@ async def get_analysis_history(
             detail="Storage 서비스가 설정되지 않았습니다"
         )
     
-    user_id = user.get("sub")
+    user_id = user.get("id")
     
     try:
         history = await storage_service.get_user_analyses_formatted(
@@ -418,7 +418,7 @@ async def get_analysis_history(
 @app.get("/api/v1/analysis/{analysis_id}", tags=["AI 분석"])
 async def get_analysis_detail(
     analysis_id: str,
-    user: dict = Depends(get_current_user_info)
+    user: dict = Depends(get_current_user_from_supabase)
 ):
     """
     특정 분석 결과 상세 조회
@@ -434,7 +434,7 @@ async def get_analysis_detail(
             detail="Storage 서비스가 설정되지 않았습니다"
         )
     
-    user_id = user.get("sub")
+    user_id = user.get("id")
     
     try:
         analysis = await storage_service.get_analysis_by_id_formatted(
